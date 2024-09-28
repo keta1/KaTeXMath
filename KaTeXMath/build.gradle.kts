@@ -1,3 +1,7 @@
+@file:Suppress("UnstableApiUsage")
+
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -10,11 +14,19 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+        externalNativeBuild {
+            cmake {
+                arguments += "-DANDROID_STL=c++_shared"
+                targets += "katexmath"
+            }
+        }
     }
     lint.targetSdk = libs.versions.targetSdk.get().toInt()
 
     externalNativeBuild {
         cmake {
+            path = File(projectDir, "src/main/cpp/CMakeLists.txt")
+            version = "3.30.3"
         }
     }
 
@@ -25,4 +37,7 @@ android {
 }
 
 kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
