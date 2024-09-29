@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.kaTeXMathView)
+    implementation(projects.kaTeXMath)
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")

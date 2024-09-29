@@ -26,7 +26,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "KaTeXMath-root"
 include(":KaTeXMath")
-include(":KaTeXMath-view")
 
 include(":app")
 include(":app-view")
