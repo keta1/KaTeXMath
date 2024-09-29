@@ -16,7 +16,19 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         externalNativeBuild {
             cmake {
-                arguments += "-DANDROID_STL=c++_shared"
+                arguments += "-DANDROID_STL=none"
+                val flags = arrayOf(
+                    "-fno-rtti",
+                    "-fno-exceptions",
+                    "-fvisibility=protected",
+                    "-fvisibility-inlines-hidden",
+                    "-ffunction-sections",
+                    "-fdata-sections",
+                    "-fmerge-all-constants",
+                    "-Oz"
+                )
+                cppFlags(*flags)
+                cFlags(*flags)
                 targets += "katexmath"
             }
         }
@@ -30,6 +42,10 @@ android {
         }
     }
 
+    buildFeatures {
+        prefab = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -40,4 +56,8 @@ kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
     }
+}
+
+dependencies {
+    implementation("dev.rikka.ndk.thirdparty:cxx:1.2.0")
 }

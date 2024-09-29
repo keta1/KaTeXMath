@@ -1,6 +1,3 @@
 [submodule "KaTeXMath/src/main/cpp/freetype"]
 	path = KaTeXMath/src/main/cpp/freetype
 	url = https://gitlab.freedesktop.org/freetype/freetype.git
-[submodule "KaTeXMath/src/main/cpp/harfbuzz"]
-	path = KaTeXMath/src/main/cpp/harfbuzz
-	url = https://github.com/harfbuzz/harfbuzz.git
