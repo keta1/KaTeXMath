@@ -1,11 +1,9 @@
 package icu.ketal.katexmath.render
 
 import android.content.res.AssetManager
-import icu.ketal.katexmath.parse.MathDisplayException
 import android.util.Log
-import com.agog.mathdisplay.render.MTFontMathTable
 
-fun PackageWarning(str: String) {
+fun packageWarning(str: String) {
     Log.w("katexmath.render", str)
 }
 
@@ -19,7 +17,6 @@ class MTFont(private val assets: AssetManager, val name: String, val fontSize: F
 
         if (!isCopy) {
             val istreamotf = assets.open(fontpath)
-                    ?: throw MathDisplayException("Missing font asset for $name")
             mathTable = MTFontMathTable(this, istreamotf)
             istreamotf.close()
         }
@@ -35,7 +32,7 @@ class MTFont(private val assets: AssetManager, val name: String, val fontSize: F
 
     fun getGidListForString(str: String): List<Int> {
         val ca = str.toCharArray()
-        val ret = MutableList(0, { 0 })
+        val ret = mutableListOf<Int>()
 
         var i = 0
         while (i < ca.size) {
@@ -43,7 +40,7 @@ class MTFont(private val assets: AssetManager, val name: String, val fontSize: F
             i += Character.charCount(codepoint)
             val gid = mathTable.getGlyphForCodepoint(codepoint)
             if (gid == 0) {
-                PackageWarning("getGidListForString codepoint $codepoint mapped to missing glyph")
+                packageWarning("getGidListForString codepoint $codepoint mapped to missing glyph")
             }
             ret.add(gid)
         }
@@ -65,5 +62,4 @@ class MTFont(private val assets: AssetManager, val name: String, val fontSize: F
     fun getGlyphWithName(glyphName: String): Int {
         return mathTable.getGlyphWithName(glyphName)
     }
-
 }

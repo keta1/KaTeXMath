@@ -1,7 +1,4 @@
-package com.agog.mathdisplay.parse
-
-import icu.ketal.katexmath.parse.MTMathAtom
-import icu.ketal.katexmath.parse.MTMathAtomType
+package icu.ketal.katexmath.parse
 
 
 /**
@@ -18,8 +15,6 @@ enum class MTColumnAlignment {
 }
 
 class MTMathTable() : MTMathAtom(MTMathAtomType.KMTMathAtomTable, "") {
-
-
     private var alignments = mutableListOf<MTColumnAlignment>()
 
     // 2D variable size array of MathLists
@@ -29,11 +24,11 @@ class MTMathTable() : MTMathAtom(MTMathAtomType.KMTMathAtomTable, "") {
     var environment: String? = null
 
     /// Spacing between each column in mu units.
-    var interColumnSpacing: Float = 0.0f
+    var interColumnSpacing: Float = 0f
 
     /// Additional spacing between rows in jots (one jot is 0.3 times font size).
 /// If the additional spacing is 0, then normal row spacing is used are used.
-    var interRowAdditionalSpacing: Float = 0.0f
+    var interRowAdditionalSpacing: Float = 0f
 
     constructor(env: String?) : this() {
         environment = env
@@ -80,7 +75,6 @@ class MTMathTable() : MTMathAtom(MTMathAtomType.KMTMathAtomTable, "") {
             while (i <= row) {
                 this.cells.add(i++, mutableListOf())
             }
-
         }
         val rowArray: MutableList<MTMathList> = this.cells[row]
         if (rowArray.size <= column) {
@@ -91,11 +85,9 @@ class MTMathTable() : MTMathAtom(MTMathAtomType.KMTMathAtomTable, "") {
             }
         }
         rowArray[column] = list
-
     }
 
     fun setAlignment(alignment: MTColumnAlignment, column: Int) {
-
         if (this.alignments.size <= column) {
             // Add more columns
             var i: Int = this.alignments.size
@@ -107,10 +99,10 @@ class MTMathTable() : MTMathAtom(MTMathAtomType.KMTMathAtomTable, "") {
     }
 
     fun getAlignmentForColumn(column: Int): MTColumnAlignment {
-        if (this.alignments.size <= column) {
-            return MTColumnAlignment.KMTColumnAlignmentCenter
+        return if (this.alignments.size <= column) {
+            MTColumnAlignment.KMTColumnAlignmentCenter
         } else {
-            return this.alignments[column]
+            this.alignments[column]
         }
     }
 
@@ -125,6 +117,4 @@ class MTMathTable() : MTMathAtom(MTMathAtomType.KMTMathAtomTable, "") {
     fun numRows(): Int {
         return this.cells.size
     }
-
 }
-

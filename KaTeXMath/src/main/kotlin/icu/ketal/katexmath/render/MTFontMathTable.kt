@@ -1,27 +1,25 @@
-package com.agog.mathdisplay.render
+package icu.ketal.katexmath.render
 
 import icu.ketal.katexmath.parse.MathDisplayException
 import com.pvporbit.freetype.*
 import com.pvporbit.freetype.FreeTypeConstants.FT_LOAD_NO_SCALE
-import icu.ketal.katexmath.render.CGGlyph
-import icu.ketal.katexmath.render.MTFont
 import java.io.IOException
 import java.io.InputStream
 
 data class MTGlyphPart(
-        var glyph: Int = 0,
-        var fullAdvance: Float = 0f,
-        var startConnectorLength: Float = 0f,
-        var endConnectorLength: Float = 0f,
-        var isExtender: Boolean = false
+    var glyph: Int = 0,
+    var fullAdvance: Float = 0f,
+    var startConnectorLength: Float = 0f,
+    var endConnectorLength: Float = 0f,
+    var isExtender: Boolean = false
 )
 
 
 class BoundingBox() {
-    var lowerLeftX: Float = 0.0f
-    var lowerLeftY: Float = 0.0f
-    var upperRightX: Float = 0.0f
-    var upperRightY: Float = 0.0f
+    var lowerLeftX: Float = 0f
+    var lowerLeftY: Float = 0f
+    var upperRightX: Float = 0f
+    var upperRightY: Float = 0f
 
     val width: Float
         get() = this.upperRightX - this.lowerLeftX
@@ -90,11 +88,11 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
             /* --- Init FreeType --- */
             /* get singleton */
             val library = FreeType.newLibrary()
-                    ?: throw  MathDisplayException("Error initializing FreeType.")
+                ?: throw MathDisplayException("Error initializing FreeType.")
 
             freeface = library.newFace(barray, 0)
             checkFontSize()
-            unitsPerEm = freeface.getUnitsPerEM()
+            unitsPerEm = freeface.unitsPerEM
 
 
             freeTypeMathTable = freeface.loadMathTable()
@@ -116,7 +114,6 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
             kVertAssemblyTable = getMathTable(kVertAssembly)
              ***/
         }
-
     }
 
     fun checkFontSize(): Face {
@@ -172,7 +169,11 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
     //  Good description and picture
     // https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
 
-    fun getBoundingRectsForGlyphs(glyphs: List<Int>, boundingRects: Array<BoundingBox?>?, count: Int): BoundingBox {
+    fun getBoundingRectsForGlyphs(
+        glyphs: List<Int>,
+        boundingRects: Array<BoundingBox?>?,
+        count: Int
+    ): BoundingBox {
         val enclosing = BoundingBox()
 
         for (i in 0 until count) {
@@ -181,12 +182,12 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
                 val gslot = freeface.getGlyphSlot()
                 val m = gslot.metrics
 
-                val w = fontUnitsToPt(m.getWidth())
-                val h = fontUnitsToPt(m.getHeight())
+                val w = fontUnitsToPt(m.width)
+                val h = fontUnitsToPt(m.height)
                 //val HoriAdvance = fontUnitsToPt(m.getHoriAdvance())
                 //val VertAdvance = fontUnitsToPt(m.getVertAdvance())
-                val horiBearingX = fontUnitsToPt(m.getHoriBearingX())
-                val horiBearingY = fontUnitsToPt(m.getHoriBearingY())
+                val horiBearingX = fontUnitsToPt(m.horiBearingX)
+                val horiBearingY = fontUnitsToPt(m.horiBearingY)
                 //val VertBearingX = fontUnitsToPt(m.getVertBearingX())
                 //val VertBearingY = fontUnitsToPt(m.getVertBearingY())
                 //println("$a $m $w $h $HoriAdvance $VertAdvance $horiBearingX $horiBearingY $VertBearingX $VertBearingY")
@@ -234,7 +235,7 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
 
 
     fun percentFromTable(percentName: String): Float {
-        return freeTypeMathTable.getConstant(percentName) / 100.0f
+        return freeTypeMathTable.getConstant(percentName) / 100f
     }
 
     val fractionNumeratorDisplayStyleShiftUp: Float
@@ -291,7 +292,7 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
 
 
     val fractionDelimiterDisplayStyleSize: Float
-    // Modified constant from 2.4 to 2.39, it matches KaTeX and looks better.
+        // Modified constant from 2.4 to 2.39, it matches KaTeX and looks better.
         get() = 2.39f * fontSize
 
     // Sub/Superscripts
@@ -363,7 +364,7 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
 
     // not present in OpenType fonts.
     val limitExtraAscenderDescender: Float
-        get() = 0.0f
+        get() = 0f
 
     // Constants
 
@@ -486,7 +487,7 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
 
             // If no top accent is defined then it is the center of the advance width.
             val glyphs = arrayOf(glyph)
-            val advances = arrayOf(0.0f)
+            val advances = arrayOf(0f)
 
             this.getAdvancesForGlyphs(glyphs.toList(), advances, 1)
             advances[0] / 2
@@ -499,9 +500,10 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
 
 
     fun getVerticalGlyphAssemblyForGlyph(glyph: Int): List<MTGlyphPart>? {
-        val assemblyInfo: Array<MTFreeTypeMathTable.GlyphPartRecord> = freeTypeMathTable.getVerticalGlyphAssemblyForGlyph(glyph)
-            ?: // No vertical assembly defined for glyph
-            return null
+        val assemblyInfo: Array<MTFreeTypeMathTable.GlyphPartRecord> =
+            freeTypeMathTable.getVerticalGlyphAssemblyForGlyph(glyph)
+                ?: // No vertical assembly defined for glyph
+                return null
 
         val rv = mutableListOf<MTGlyphPart>()
         for (pi in assemblyInfo) {

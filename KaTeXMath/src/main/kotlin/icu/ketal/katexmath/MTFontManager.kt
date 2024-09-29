@@ -11,13 +11,13 @@ const val KDefaultFontSize = 20f
 class MTFontManager {
     companion object {
         private var assets: AssetManager? = null
-        private val nameToFontMap: HashMap<String, MTFont> = HashMap<String, MTFont>()
+        private val nameToFontMap: HashMap<String, MTFont> = HashMap()
 
         /**
             @param name  filename in that assets directory of the opentype font minus the otf extension
             @param size  device pixels
          */
-        fun fontWithName(name: String, size: Float): MTFont? {
+        fun fontWithName(name: String, size: Float): MTFont {
             var f = nameToFontMap[name]
             if (f == null) {
                 val a = assets
@@ -40,21 +40,20 @@ class MTFontManager {
             assets = context.assets
         }
 
-        fun latinModernFontWithSize(size: Float): MTFont? {
+        fun latinModernFontWithSize(size: Float): MTFont {
             return fontWithName("latinmodern-math", size)
         }
 
-        fun xitsFontWithSize(size: Float): MTFont? {
+        fun xitsFontWithSize(size: Float): MTFont {
             return fontWithName("xits-math", size)
         }
 
-        fun termesFontWithSize(size: Float): MTFont? {
+        fun termesFontWithSize(size: Float): MTFont {
             return fontWithName("texgyretermes-math", size)
         }
 
-        fun defaultFont(): MTFont? {
+        fun defaultFont(): MTFont {
             return latinModernFontWithSize(KDefaultFontSize)
         }
-
     }
 }

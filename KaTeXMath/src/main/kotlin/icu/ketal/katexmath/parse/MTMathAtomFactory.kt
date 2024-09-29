@@ -1,18 +1,4 @@
-package com.agog.mathdisplay.parse
-
-import icu.ketal.katexmath.parse.MTAccent
-import icu.ketal.katexmath.parse.MTFontStyle
-import icu.ketal.katexmath.parse.MTFraction
-import icu.ketal.katexmath.parse.MTInner
-import icu.ketal.katexmath.parse.MTLargeOperator
-import icu.ketal.katexmath.parse.MTLineStyle
-import icu.ketal.katexmath.parse.MTMathAtom
-import icu.ketal.katexmath.parse.MTMathAtomType
-import icu.ketal.katexmath.parse.MTMathSpace
-import icu.ketal.katexmath.parse.MTMathStyle
-import icu.ketal.katexmath.parse.MTParseError
-import icu.ketal.katexmath.parse.MTParseErrors
-import icu.ketal.katexmath.parse.MTRadical
+package icu.ketal.katexmath.parse
 
 private const val MTSymbolMultiplication = "\u00D7"
 private const val MTSymbolDivision = "\u00F7"
@@ -30,7 +16,6 @@ private const val MTSymbolDegree = "\u00B0" // \circ
 
 
 open class MTMathAtomFactory {
-
     fun times(): MTMathAtom {
         return MTMathAtom(MTMathAtomType.KMTMathAtomBinaryOperator, MTSymbolMultiplication)
     }
@@ -210,7 +195,7 @@ open class MTMathAtomFactory {
         if (matrixEnvs.containsKey(env)) {
             // it is set to matrix as the delimiters are converted to latex outside the table.
             table.environment = "matrix"
-            table.interRowAdditionalSpacing = 0.0f
+            table.interRowAdditionalSpacing = 0f
             table.interColumnSpacing = 18.0f
             // All the lists are in textstyle
             val style: MTMathAtom = MTMathStyle(MTLineStyle.KMTLineStyleText)
@@ -235,7 +220,7 @@ open class MTMathAtomFactory {
         } else if (env == null) {
             // The default env.
             table.interRowAdditionalSpacing = 1.0f
-            table.interColumnSpacing = 0.0f
+            table.interColumnSpacing = 0f
             val cols = table.numColumns()
             for (i in 0 until cols) {
                 table.setAlignment(MTColumnAlignment.KMTColumnAlignmentLeft, i)
@@ -255,7 +240,7 @@ open class MTMathAtomFactory {
                 }
             }
             table.interRowAdditionalSpacing = 1.0f
-            table.interColumnSpacing = 0.0f
+            table.interColumnSpacing = 0f
             table.setAlignment(MTColumnAlignment.KMTColumnAlignmentRight, 0)
             table.setAlignment(MTColumnAlignment.KMTColumnAlignmentLeft, 1)
             return table
@@ -265,7 +250,7 @@ open class MTMathAtomFactory {
                 return null
             }
             table.interRowAdditionalSpacing = 1.0f
-            table.interColumnSpacing = 0.0f
+            table.interColumnSpacing = 0f
             table.setAlignment(MTColumnAlignment.KMTColumnAlignmentCenter, 0)
             return table
         } else if (env == "eqnarray") {
@@ -284,7 +269,7 @@ open class MTMathAtomFactory {
                 error.copyFrom(MTParseError(MTParseErrors.InvalidNumColumns, "cases environment can only have 2 columns"))
                 return null
             }
-            table.interRowAdditionalSpacing = 0.0f
+            table.interRowAdditionalSpacing = 0f
             table.interColumnSpacing = 18.0f
             table.setAlignment(MTColumnAlignment.KMTColumnAlignmentLeft, 0)
             table.setAlignment(MTColumnAlignment.KMTColumnAlignmentLeft, 1)
@@ -730,5 +715,4 @@ open class MTMathAtomFactory {
         }
         return null
     }
-
 }

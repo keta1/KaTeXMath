@@ -6,7 +6,7 @@
     <item
         android:title="Font"
         android:id="@+id/menufont"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
         <menu>
             <group
                 android:id="@+id/group1"
@@ -30,7 +30,7 @@
     <item
         android:title="Size"
         android:id="@+id/menusize"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
         <menu>
             <group
                 android:id="@+id/group2"
@@ -58,7 +58,7 @@
     <item
         android:title="Mode"
         android:id="@+id/menumode"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
         <menu>
             <group
                 android:id="@+id/group3"
@@ -82,7 +82,7 @@
     </item>
     <item
         android:title="Color"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
         <menu>
             <group
                 android:id="@+id/group4"

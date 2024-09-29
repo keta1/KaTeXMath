@@ -38,7 +38,6 @@ enum class MTParseErrors {
 }
 
 data class MTParseError(var errorCode: MTParseErrors = MTParseErrors.ErrorNone, var errorDesc: String = "") {
-
     fun copyFrom(src: MTParseError?) {
         if (src != null) {
             this.errorCode = src.errorCode

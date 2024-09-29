@@ -30,7 +30,7 @@ public class FreeTypeConstants {
 
     /* FT_LOAD_* (Load Char flags) */
     public static final int FT_LOAD_DEFAULT = 0x0;
-    public static final int FT_LOAD_NO_SCALE = (1 << 0);
+    public static final int FT_LOAD_NO_SCALE = (1);
     public static final int FT_LOAD_NO_HINTING = (1 << 1);
     public static final int FT_LOAD_RENDER = (1 << 2);
     public static final int FT_LOAD_NO_BITMAP = (1 << 3);

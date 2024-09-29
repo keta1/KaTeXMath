@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private var sampleEquations: MutableList<MTMathView> = mutableListOf()
-    private var defaultFontSize = 20.0f  // Starting fontsize dp pixels
+    private var defaultFontSize = 20f  // Starting fontsize dp pixels
 
     private fun createEquations() {
         val layoutPadHoriz = 24
@@ -124,12 +124,12 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.f20 -> {
-                applyfontsize(20.0f)
+                applyfontsize(20f)
                 sizemenucheck(R.id.f20)
                 return true
             }
             R.id.f40 -> {
-                applyfontsize(40.0f)
+                applyfontsize(40f)
                 sizemenucheck(R.id.f40)
                 return true
             }

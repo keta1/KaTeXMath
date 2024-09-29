@@ -1,29 +1,31 @@
-@file:Suppress("ConstantConditionIf")
-
-package com.agog.mathdisplay.render
+package icu.ketal.katexmath.render
 
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.os.Build
 import icu.ketal.katexmath.parse.NSNotFound
 import icu.ketal.katexmath.parse.NSRange
-
-import com.agog.mathdisplay.render.MTLinePosition.*
 import icu.ketal.katexmath.parse.MTMathAtom
-import icu.ketal.katexmath.render.CGGlyph
-import icu.ketal.katexmath.render.MTDrawFreeType
-import icu.ketal.katexmath.render.MTFont
+import icu.ketal.katexmath.render.MTLinePosition.*
 
 const val DEBUG = false
 
-data class CGPoint(var x: Float = 0.0f, var y: Float = 0.0f)
-data class CGRect(var x: Float = 0.0f, var y: Float = 0.0f, var width: Float = 0.0f, var height: Float = 0.0f)
+data class CGPoint(var x: Float = 0f, var y: Float = 0f)
+data class CGRect(
+    var x: Float = 0f,
+    var y: Float = 0f,
+    var width: Float = 0f,
+    var height: Float = 0f
+)
 
-open class MTDisplay(open var ascent: Float = 0.0f, open var descent: Float = 0.0f, open var width: Float = 0.0f,
-                     var range: NSRange = NSRange(), var hasScript: Boolean = false) {
-
-    var shiftDown: Float = 0.0f
+open class MTDisplay(
+    open var ascent: Float = 0f,
+    open var descent: Float = 0f,
+    open var width: Float = 0f,
+    var range: NSRange = NSRange(),
+    var hasScript: Boolean = false
+) {
+    var shiftDown: Float = 0f
     /// The distance from the axis to the top of the display
     /// The distance from the axis to the bottom of the display
     /// The width of the display
@@ -61,60 +63,69 @@ open class MTDisplay(open var ascent: Float = 0.0f, open var descent: Float = 0.
     }
 
     open fun positionChanged() {
-
     }
 
     open fun colorChanged() {
     }
 
-
     open fun draw(canvas: Canvas) {
         if (DEBUG) {
-            val strokePaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+            val strokePaint =
+                Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
             strokePaint.setColor(Color.RED)
-            canvas.drawLine(0.0f, -descent, width, ascent, strokePaint)
+            canvas.drawLine(0f, -descent, width, ascent, strokePaint)
             strokePaint.setColor(Color.GREEN)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                canvas.drawArc(position.x - 2, position.y - 2, position.x + 2, position.y + 2, 0f, 360f, false, strokePaint)
-            }
+            canvas.drawArc(
+                position.x - 2,
+                position.y - 2,
+                position.x + 2,
+                position.y + 2,
+                0f,
+                360f,
+                false,
+                strokePaint
+            )
         }
-
     }
 
     fun displayBounds(): CGRect {
         return CGRect(position.x, position.y - descent, width, ascent + descent)
     }
-
 }
 
 
 // List of normal atoms to display that would be an attributed string on iOS
 // Since we do not allow kerning attribute changes this is a string displayed using the advances for the font
 // Normally this is a single character. In some cases the string will be fused atoms
-class MTCTLineDisplay(val str: String, range: NSRange, val font: MTFont, val atoms: List<MTMathAtom>) :
-        MTDisplay(range = range) {
+class MTCTLineDisplay(
+    val str: String,
+    range: NSRange,
+    val font: MTFont,
+    val atoms: List<MTMathAtom>
+) :
+    MTDisplay(range = range) {
 
     init {
         computeDimensions()
     }
 
     // Our own implementation of the ios6 function to get glyph path bounds.
-    fun computeDimensions() {
+    private fun computeDimensions() {
         val glyphs = font.getGidListForString(str)
         val num = glyphs.count()
         val bboxes: Array<BoundingBox?> = arrayOfNulls(num)
-        val advances: Array<Float> = Array(num, { 0.0f })
+        val advances: Array<Float> = Array(num) { 0f }
         // Get the bounds for these glyphs
         font.mathTable.getBoundingRectsForGlyphs(glyphs.toList(), bboxes, num)
         font.mathTable.getAdvancesForGlyphs(glyphs.toList(), advances, num)
 
-        this.width = 0.0f
+        this.width = 0f
         for (i in 0 until num) {
             val b = bboxes[i]
             if (b != null) {
-                val ascent = maxOf(0.0f, b.upperRightY - 0)
+                val ascent = maxOf(0f, b.upperRightY - 0)
                 // Descent is how much the line goes below the origin. However if the line is all above the origin, then descent can't be negative.
-                val descent = maxOf(0.0f, 0.0f - b.lowerLeftY)
+                val descent = maxOf(0f, 0f - b.lowerLeftY)
                 if (ascent > this.ascent) {
                     this.ascent = ascent
                 }
@@ -124,7 +135,6 @@ class MTCTLineDisplay(val str: String, range: NSRange, val font: MTFont, val ato
                 this.width += advances[i]
             }
         }
-
     }
 
 
@@ -136,23 +146,21 @@ class MTCTLineDisplay(val str: String, range: NSRange, val font: MTFont, val ato
 
         val glyphs = font.getGidListForString(str)
         val num = glyphs.count()
-        val advances: Array<Float> = Array(num, { 0.0f })
+        val advances: Array<Float> = Array(num) { 0f }
         font.mathTable.getAdvancesForGlyphs(glyphs, advances, num)
 
 
         canvas.save()
         canvas.translate(position.x, position.y)
         canvas.scale(1.0f, -1.0f)
-        var x = 0.0f
+        var x = 0f
         for (i in 0 until num) {
-            drawer.drawGlyph(canvas, textPaint, glyphs[i], x, 0.0f)
+            drawer.drawGlyph(canvas, textPaint, glyphs[i], x, 0f)
             x += advances[i]
         }
         textPaint.setColor(Color.RED)
         canvas.restore()
     }
-
-
 }
 
 
@@ -164,8 +172,10 @@ class MTCTLineDisplay(val str: String, range: NSRange, val font: MTFont, val ato
 enum class MTLinePosition {
     /// Regular
     KMTLinePositionRegular,
+
     /// Positioned at a subscript
     KMTLinePositionSubscript,
+
     /// Positioned at a superscript
     KMTLinePositionSuperscript
 }
@@ -173,9 +183,11 @@ enum class MTLinePosition {
 class MTMathListDisplay(displays: List<MTDisplay>, range: NSRange) : MTDisplay(range = range) {
     /// Where the line is positioned
     var type: MTLinePosition = KMTLinePositionRegular
+
     /// An array of MTDisplays which are positioned relative to the position of the
 /// the current display.
     var subDisplays: List<MTDisplay>? = null
+
     /// If a subscript or superscript this denotes the location in the parent MTList. For a
     /// regular list this is NSNotFound
     var index = NSNotFound
@@ -204,20 +216,18 @@ class MTMathListDisplay(displays: List<MTDisplay>, range: NSRange) : MTDisplay(r
     override fun draw(canvas: Canvas) {
         canvas.save()
         if (DEBUG) {
-            val strokePaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+            val strokePaint =
+                Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
             strokePaint.setColor(Color.BLACK)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                canvas.drawArc(-4f, -4f, 4f, 4f, 4f, 180f, false, strokePaint)
-            }
+            canvas.drawArc(-4f, -4f, 4f, 4f, 4f, 180f, false, strokePaint)
         }
 
         canvas.translate(position.x, position.y)
         if (DEBUG) {
-            val strokePaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+            val strokePaint =
+                Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
             strokePaint.setColor(Color.BLUE)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                canvas.drawArc(-3f, -3f, 3f, 3f, 0f, 360f, false, strokePaint)
-            }
+            canvas.drawArc(-3f, -3f, 3f, 3f, 0f, 360f, false, strokePaint)
         }
         // draw each atom separately
         val sd = this.subDisplays
@@ -230,50 +240,53 @@ class MTMathListDisplay(displays: List<MTDisplay>, range: NSRange) : MTDisplay(r
     }
 
 
-    fun recomputeDimensions() {
-        var max_ascent = 0.0f
-        var max_descent = 0.0f
-        var max_width = 0.0f
+    private fun recomputeDimensions() {
+        var maxAscent = 0f
+        var maxDescent = 0f
+        var maxWidth = 0f
         val sd = this.subDisplays
         if (sd != null) {
             for (atom in sd.toList()) {
-                val ascent = maxOf(0.0f, atom.position.y + atom.ascent)
-                if (ascent > max_ascent) {
-                    max_ascent = ascent
+                val ascent = maxOf(0f, atom.position.y + atom.ascent)
+                if (ascent > maxAscent) {
+                    maxAscent = ascent
                 }
 
-                val descent = maxOf(0.0f, 0 - (atom.position.y - atom.descent))
-                if (descent > max_descent) {
-                    max_descent = descent
+                val descent = maxOf(0f, 0 - (atom.position.y - atom.descent))
+                if (descent > maxDescent) {
+                    maxDescent = descent
                 }
                 val width = atom.width + atom.position.x
-                if (width > max_width) {
-                    max_width = width
+                if (width > maxWidth) {
+                    maxWidth = width
                 }
             }
         }
-        this.ascent = max_ascent
-        this.descent = max_descent
-        this.width = max_width
+        this.ascent = maxAscent
+        this.descent = maxDescent
+        this.width = maxWidth
     }
-
 }
 
 // MTFractionDisplay
 
-class MTFractionDisplay(var numerator: MTMathListDisplay, var denominator: MTMathListDisplay, range: NSRange) :
-        MTDisplay(range = range) {
-    var linePosition = 0.0f
-    var lineThickness = 0.0f
+class MTFractionDisplay(
+    var numerator: MTMathListDisplay,
+    var denominator: MTMathListDisplay,
+    range: NSRange
+) :
+    MTDisplay(range = range) {
+    var linePosition = 0f
+    var lineThickness = 0f
 
 
     // NSAssert(self.range.length == 1, @"Fraction range length not 1 - range (%lu, %lu)", (unsigned long)range.location, (unsigned long)range.length)
-    var numeratorUp: Float = 0.0f
+    var numeratorUp: Float = 0f
         set(value) {
             field = value
             this.updateNumeratorPosition()
         }
-    var denominatorDown: Float = 0.0f
+    var denominatorDown: Float = 0f
         set(value) {
             field = value
             this.updateDenominatorPosition()
@@ -297,12 +310,17 @@ class MTFractionDisplay(var numerator: MTMathListDisplay, var denominator: MTMat
 
 
     fun updateDenominatorPosition() {
-        this.denominator.position = CGPoint(this.position.x + (this.width - this.denominator.width) / 2, this.position.y - this.denominatorDown)
+        this.denominator.position = CGPoint(
+            this.position.x + (this.width - this.denominator.width) / 2,
+            this.position.y - this.denominatorDown
+        )
     }
 
     fun updateNumeratorPosition() {
-
-        this.numerator.position = CGPoint(this.position.x + (this.width - this.numerator.width) / 2, this.position.y + this.numeratorUp)
+        this.numerator.position = CGPoint(
+            this.position.x + (this.width - this.numerator.width) / 2,
+            this.position.y + this.numeratorUp
+        )
     }
 
     override fun positionChanged() {
@@ -320,30 +338,36 @@ class MTFractionDisplay(var numerator: MTMathListDisplay, var denominator: MTMat
         this.denominator.draw(canvas)
 
         if (lineThickness != 0f) {
-            val strokePaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+            val strokePaint =
+                Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
             strokePaint.setColor(textColor)
             strokePaint.strokeWidth = lineThickness
-            canvas.drawLine(position.x, position.y + linePosition, position.x + width, position.y + linePosition,
-                    strokePaint)
+            canvas.drawLine(
+                position.x,
+                position.y + linePosition,
+                position.x + width,
+                position.y + linePosition,
+                strokePaint
+            )
         }
     }
-
 }
 
 // MTRadicalDisplay
-
-
-class MTRadicalDisplay(val radicand: MTMathListDisplay, val radicalGlyph: MTDisplay, range: NSRange) :
-        MTDisplay(range = range) {
+class MTRadicalDisplay(
+    val radicand: MTMathListDisplay,
+    val radicalGlyph: MTDisplay,
+    range: NSRange
+) : MTDisplay(range = range) {
 
     init {
         updateRadicandPosition()
     }
 
-    var radicalShift: Float = 0.0f
+    var radicalShift: Float = 0f
     var degree: MTMathListDisplay? = null
-    var topKern: Float = 0.0f
-    var lineThickness: Float = 0.0f
+    var topKern: Float = 0f
+    var lineThickness: Float = 0f
 
 
     fun setDegree(degree: MTMathListDisplay, fontMetrics: MTFontMathTable) {
@@ -362,7 +386,7 @@ class MTRadicalDisplay(val radicand: MTMathListDisplay, val radicalGlyph: MTDisp
             // we can't have the radical shift backwards, so instead we increase the kernBefore such
             // that _radicalShift will be 0.
             kernBefore -= radicalShift
-            radicalShift = 0.0f
+            radicalShift = 0f
         }
 
         // Note: position of degree is relative to parent.
@@ -380,12 +404,13 @@ class MTRadicalDisplay(val radicand: MTMathListDisplay, val radicalGlyph: MTDisp
         updateRadicandPosition()
     }
 
-    fun updateRadicandPosition() {
+    private fun updateRadicandPosition() {
         // The position of the radicand includes the position of the MTRadicalDisplay
         // This is to make the positioning of the radical consistent with fractions and
         // have the cursor position finding algorithm work correctly.
         // move the radicand by the width of the radical sign
-        this.radicand.position = CGPoint(this.position.x + radicalShift + radicalGlyph.width, this.position.y)
+        this.radicand.position =
+            CGPoint(this.position.x + radicalShift + radicalGlyph.width, this.position.y)
     }
 
     override fun colorChanged() {
@@ -415,7 +440,8 @@ class MTRadicalDisplay(val radicand: MTMathListDisplay, val radicalGlyph: MTDisp
         val heightFromTop = topKern
 
         // draw the horizontal line with the given thickness
-        val strokePaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+        val strokePaint =
+            Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
         strokePaint.setColor(textColor)
         strokePaint.strokeWidth = lineThickness
         strokePaint.strokeCap = Paint.Cap.ROUND
@@ -424,26 +450,24 @@ class MTRadicalDisplay(val radicand: MTMathListDisplay, val radicalGlyph: MTDisp
         canvas.drawLine(x, y, x + radicand.width, y, strokePaint)
 
         canvas.restore()
-
     }
 }
 
 
 // MTGlyphDisplay
-
 class MTGlyphDisplay(val glyph: CGGlyph, range: NSRange, val myfont: MTFont) :
-        MTDisplay(range = range) {
-
+    MTDisplay(range = range) {
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        val textPaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+        val textPaint =
+            Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
         textPaint.setColor(textColor)
         val drawer = MTDrawFreeType(myfont.mathTable)
 
         canvas.save()
         canvas.translate(position.x, position.y - this.shiftDown)
         canvas.scale(1.0f, -1.0f)
-        drawer.drawGlyph(canvas, textPaint, glyph.gid, 0.0f, 0.0f)
+        drawer.drawGlyph(canvas, textPaint, glyph.gid, 0f, 0f)
         canvas.restore()
     }
 
@@ -458,14 +482,16 @@ class MTGlyphDisplay(val glyph: CGGlyph, range: NSRange, val myfont: MTFont) :
         set(value) {
             super.descent = value
         }
-
 }
 
 
 // MTGlyphConstructionDisplay
-
-class MTGlyphConstructionDisplay(val glyphs: MutableList<Int>, val offsets: MutableList<Float>, val myfont: MTFont) :
-        MTDisplay() {
+class MTGlyphConstructionDisplay(
+    val glyphs: MutableList<Int>,
+    val offsets: MutableList<Float>,
+    val myfont: MTFont
+) :
+    MTDisplay() {
     init {
         assert(glyphs.size == offsets.size)
     }
@@ -481,7 +507,8 @@ class MTGlyphConstructionDisplay(val glyphs: MutableList<Int>, val offsets: Muta
 
         // Draw the glyphs.
         // positions these are x&y (0,offsets[i])
-        val textPaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+        val textPaint =
+            Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
         textPaint.setColor(textColor)
         //textPaint.setTextSize(myfont.fontSize)
         //textPaint.setTypeface(myfont.typeface)
@@ -491,9 +518,9 @@ class MTGlyphConstructionDisplay(val glyphs: MutableList<Int>, val offsets: Muta
             canvas.save()
             canvas.translate(0f, offsets[i])
             canvas.scale(1.0f, -1.0f)
-            drawer.drawGlyph(canvas, textPaint, glyphs[i], 0.0f, 0.0f)
+            drawer.drawGlyph(canvas, textPaint, glyphs[i], 0f, 0f)
 
-            //canvas.drawText(textstr, 0.0f, 0.0f, textPaint)
+            //canvas.drawText(textstr, 0f, 0f, textPaint)
             canvas.restore()
         }
 
@@ -511,15 +538,18 @@ class MTGlyphConstructionDisplay(val glyphs: MutableList<Int>, val offsets: Muta
         set(value) {
             super.descent = value
         }
-
 }
 
 // MTLargeOpLimitsDisplay
 
-class MTLargeOpLimitsDisplay(val nucleus: MTDisplay, var upperLimit: MTMathListDisplay?, var lowerLimit: MTMathListDisplay?, var limitShift: Float, var extraPadding: Float) :
-        MTDisplay() {
-
-
+class MTLargeOpLimitsDisplay(
+    val nucleus: MTDisplay,
+    var upperLimit: MTMathListDisplay?,
+    var lowerLimit: MTMathListDisplay?,
+    var limitShift: Float,
+    var extraPadding: Float
+) :
+    MTDisplay() {
     init {
         var maxWidth: Float = nucleus.width
         if (upperLimit != null) {
@@ -550,14 +580,14 @@ class MTLargeOpLimitsDisplay(val nucleus: MTDisplay, var upperLimit: MTMathListD
         }
 
 
-    var lowerLimitGap: Float = 0.0f
+    var lowerLimitGap: Float = 0f
         set(value) {
             field = value
             this.updateLowerLimitPosition()
         }
 
 
-    var upperLimitGap: Float = 0.0f
+    var upperLimitGap: Float = 0f
         set(value) {
             field = value
             this.updateUpperLimitPosition()
@@ -570,31 +600,35 @@ class MTLargeOpLimitsDisplay(val nucleus: MTDisplay, var upperLimit: MTMathListD
         this.updateNucleusPosition()
     }
 
-    fun updateLowerLimitPosition() {
+    private fun updateLowerLimitPosition() {
         val ll = this.lowerLimit
         if (ll != null) {
             // The position of the lower limit includes the position of the MTLargeOpLimitsDisplay
             // This is to make the positioning of the radical consistent with fractions and radicals
             // Move the starting point to below the nucleus leaving a gap of _lowerLimitGap and subtract
             // the ascent to to get the baseline. Also center and shift it to the left by _limitShift.
-            ll.position = CGPoint(position.x - limitShift + (this.width - ll.width) / 2,
-                    position.y - nucleus.descent - lowerLimitGap - ll.ascent)
+            ll.position = CGPoint(
+                position.x - limitShift + (this.width - ll.width) / 2,
+                position.y - nucleus.descent - lowerLimitGap - ll.ascent
+            )
         }
     }
 
-    fun updateUpperLimitPosition() {
+    private fun updateUpperLimitPosition() {
         val ul = this.upperLimit
         if (ul != null) {
             // The position of the upper limit includes the position of the MTLargeOpLimitsDisplay
             // This is to make the positioning of the radical consistent with fractions and radicals
             // Move the starting point to above the nucleus leaving a gap of _upperLimitGap and add
             // the descent to to get the baseline. Also center and shift it to the right by _limitShift.
-            ul.position = CGPoint(position.x + limitShift + (this.width - ul.width) / 2,
-                    position.y + nucleus.ascent + upperLimitGap + ul.descent)
+            ul.position = CGPoint(
+                position.x + limitShift + (this.width - ul.width) / 2,
+                position.y + nucleus.ascent + upperLimitGap + ul.descent
+            )
         }
     }
 
-    fun updateNucleusPosition() {
+    private fun updateNucleusPosition() {
         // Center the nucleus
         nucleus.position = CGPoint(position.x + (this.width - nucleus.width) / 2, position.y)
     }
@@ -617,16 +651,15 @@ class MTLargeOpLimitsDisplay(val nucleus: MTDisplay, var upperLimit: MTMathListD
         upperLimit?.draw(canvas)
         lowerLimit?.draw(canvas)
         nucleus.draw(canvas)
-
     }
 }
 
 // MTLineDisplay  overline or underline
 class MTLineDisplay(val inner: MTMathListDisplay, range: NSRange) :
-        MTDisplay(range = range) {
+    MTDisplay(range = range) {
     // How much the line should be moved up.
-    var lineShiftUp: Float = 0.0f
-    var lineThickness: Float = 0.0f
+    var lineShiftUp: Float = 0f
+    var lineThickness: Float = 0f
 
     override fun colorChanged() {
         this.inner.textColor = this.textColor
@@ -636,11 +669,14 @@ class MTLineDisplay(val inner: MTMathListDisplay, range: NSRange) :
         this.inner.draw(canvas)
 
         if (lineThickness != 0f) {
-            val strokePaint = Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
+            val strokePaint =
+                Paint(Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
             strokePaint.setColor(textColor)
             strokePaint.strokeWidth = lineThickness
-            canvas.drawLine(position.x, position.y + lineShiftUp, position.x + width, position.y + lineShiftUp,
-                    strokePaint)
+            canvas.drawLine(
+                position.x, position.y + lineShiftUp, position.x + width, position.y + lineShiftUp,
+                strokePaint
+            )
         }
 
     }
@@ -649,16 +685,15 @@ class MTLineDisplay(val inner: MTMathListDisplay, range: NSRange) :
         this.updateInnerPosition()
     }
 
-    fun updateInnerPosition() {
+    private fun updateInnerPosition() {
         this.inner.position = CGPoint(this.position.x, this.position.y)
     }
-
 }
 
 // MTAccentDisplay
 
 class MTAccentDisplay(val accent: MTGlyphDisplay, val accentee: MTMathListDisplay, range: NSRange) :
-        MTDisplay(range = range) {
+    MTDisplay(range = range) {
     init {
         accentee.position = CGPoint()
         super.range = range.copy()
@@ -685,7 +720,5 @@ class MTAccentDisplay(val accent: MTGlyphDisplay, val accentee: MTMathListDispla
         canvas.translate(position.x, position.y)
         this.accent.draw(canvas)
         canvas.restore()
-
     }
 }
-

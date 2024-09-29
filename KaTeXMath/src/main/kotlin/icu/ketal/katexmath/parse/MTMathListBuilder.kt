@@ -8,26 +8,7 @@
 //  This software may be modified and distributed under the terms of the
 //  MIT license. See the LICENSE file for details.
 //
-package com.agog.mathdisplay.parse
-
-import icu.ketal.katexmath.parse.MTAccent
-import icu.ketal.katexmath.parse.MTFontStyle
-import icu.ketal.katexmath.parse.MTFraction
-import icu.ketal.katexmath.parse.MTInner
-import icu.ketal.katexmath.parse.MTLargeOperator
-import icu.ketal.katexmath.parse.MTLineStyle
-import icu.ketal.katexmath.parse.MTMathAtom
-import icu.ketal.katexmath.parse.MTMathAtomType
-import icu.ketal.katexmath.parse.MTMathColor
-import icu.ketal.katexmath.parse.MTMathSpace
-import icu.ketal.katexmath.parse.MTMathStyle
-import icu.ketal.katexmath.parse.MTMathTextColor
-import icu.ketal.katexmath.parse.MTOverLine
-import icu.ketal.katexmath.parse.MTParseError
-import icu.ketal.katexmath.parse.MTParseErrors
-import icu.ketal.katexmath.parse.MTRadical
-import icu.ketal.katexmath.parse.MTUnderLine
-import icu.ketal.katexmath.parse.MathDisplayException
+package icu.ketal.katexmath.parse
 
 
 // NSString *const MTParseError = "ParseError"
@@ -38,21 +19,21 @@ data class MTEnvProperties(var envName: String?, var ended: Boolean = false, var
 class MTMathListBuilder(str: String) {
     private var chars: String = str
     private var currentCharIndex: Int = 0
-    private var charlength: Int = str.length
+    private var charLength: Int = str.length
     private var currentInnerAtom: MTInner? = null
     private var currentEnv: MTEnvProperties? = null
     private var currentFontStyle: MTFontStyle = MTFontStyle.KMTFontStyleDefault
     private var spacesAllowed: Boolean = false
-    private var parseerror: MTParseError? = null
+    private var parseError: MTParseError? = null
 
     private fun hasCharacters(): Boolean {
-        return currentCharIndex < charlength
+        return currentCharIndex < charLength
     }
 
     // gets the next character and moves the pointer ahead
     private fun getNextCharacter(): Char {
-        if (currentCharIndex >= charlength) {
-            throw MathDisplayException("Retrieving character at index $currentCharIndex beyond length $charlength")
+        if (currentCharIndex >= charLength) {
+            throw MathDisplayException("Retrieving character at index $currentCharIndex beyond length $charLength")
         }
         return chars[currentCharIndex++]
     }
@@ -80,7 +61,7 @@ class MTMathListBuilder(str: String) {
 
     private fun buildInternal(oneCharOnly: Boolean, stopChar: Char): MTMathList? {
         val list = MTMathList()
-        if (oneCharOnly && (stopChar.toInt() > 0)) {
+        if (oneCharOnly && (stopChar.code > 0)) {
             throw MathDisplayException("Cannot set both oneCharOnly and stopChar.")
         }
 
@@ -101,7 +82,7 @@ class MTMathListBuilder(str: String) {
                 }
             }
             // If there is a stop character, keep scanning till we find it
-            if (stopChar.toInt() > 0 && ch == stopChar) {
+            if (stopChar.code > 0 && ch == stopChar) {
                 return list
             }
 
@@ -120,6 +101,7 @@ class MTMathListBuilder(str: String) {
                     prevAtom.superScript = buildInternal(true)
                     continue@outerloop
                 }
+
                 '_' -> {
                     if (oneCharOnly) throw MathDisplayException("This should have been handled before")
 
@@ -134,6 +116,7 @@ class MTMathListBuilder(str: String) {
                     prevAtom.subScript = buildInternal(true)
                     continue@outerloop
                 }
+
                 '{' -> {
                     // this puts us in a recursive routine, and sets oneCharOnly to false and no stop character
                     val sublist: MTMathList? = buildInternal(false, '}')
@@ -146,14 +129,16 @@ class MTMathListBuilder(str: String) {
                     }
                     continue@outerloop
                 }
+
                 '}' -> {
                     if (oneCharOnly) throw MathDisplayException("This should have been handled before")
-                    if (stopChar.toInt() != 0) throw MathDisplayException("This should have been handled before")
+                    if (stopChar.code != 0) throw MathDisplayException("This should have been handled before")
                     // We encountered a closing brace when there is no stop set, that means there was no
                     // corresponding opening brace.
                     this.setError(MTParseErrors.MismatchBraces, "Mismatched braces.")
                     return null
                 }
+
                 '\\' -> {
                     // \ means a command
                     val command: String = readCommand()
@@ -196,6 +181,7 @@ class MTMathListBuilder(str: String) {
                         return null
                     }
                 }
+
                 '&' -> {
                     // used for column separation in tables
                     if (oneCharOnly) throw MathDisplayException("This should have been handled before")
@@ -211,6 +197,7 @@ class MTMathListBuilder(str: String) {
                         }
                     }
                 }
+
                 else -> {
                     if (spacesAllowed && ch == ' ') {
                         // If spaces are allowed then spaces do not need escaping with a \ before being used.
@@ -239,13 +226,16 @@ class MTMathListBuilder(str: String) {
         }
 
 
-        if (stopChar.toInt() > 0) {
+        if (stopChar.code > 0) {
             if (stopChar == '}') {
                 // We did not find a corresponding closing brace.
                 this.setError(MTParseErrors.MismatchBraces, "Missing closing brace")
             } else {
                 // we never found our stop character
-                this.setError(MTParseErrors.CharacterNotFound, "Expected character not found: $stopChar")
+                this.setError(
+                    MTParseErrors.CharacterNotFound,
+                    "Expected character not found: $stopChar"
+                )
             }
         }
         return list
@@ -299,7 +289,7 @@ class MTMathListBuilder(str: String) {
     }
 
     private fun nonSpaceChar(ch: Char): Boolean {
-        return (ch.toInt() < 0x21 || ch.toInt() > 0x7E)
+        return (ch.code < 0x21 || ch.code > 0x7E)
     }
 
     private fun skipSpaces() {
@@ -332,7 +322,8 @@ class MTMathListBuilder(str: String) {
         return false
     }
 
-    private var singleCharCommands: Array<Char> = arrayOf('{', '}', '$', '#', '%', '_', '|', ' ', ',', '>', ';', '!', '\\')
+    private var singleCharCommands: Array<Char> =
+        arrayOf('{', '}', '$', '#', '%', '_', '|', ' ', ',', '>', ';', '!', '\\')
 
     private fun readCommand(): String {
         if (hasCharacters()) {
@@ -382,7 +373,7 @@ class MTMathListBuilder(str: String) {
 
         // Ignore spaces and nonascii.
         skipSpaces()
-        val env: String? = readString()
+        val env: String = readString()
 
         if (!expectCharacter('}')) {
             // We didn't find an closing brace, so invalid format.
@@ -400,7 +391,10 @@ class MTMathListBuilder(str: String) {
         }
         val boundary = MTMathAtom.boundaryAtomForDelimiterName(delim)
         if (boundary == null) {
-            this.setError(MTParseErrors.InvalidDelimiter, "Invalid delimiter for $delimiterType: $delim")
+            this.setError(
+                MTParseErrors.InvalidDelimiter,
+                "Invalid delimiter for $delimiterType: $delim"
+            )
             return null
         }
 
@@ -427,6 +421,7 @@ class MTMathListBuilder(str: String) {
                 frac.denominator = this.buildInternal(true)
                 return frac
             }
+
             "binom" -> {
                 // A binom command has 2 arguments
                 val frac = MTFraction(false)
@@ -436,6 +431,7 @@ class MTMathListBuilder(str: String) {
                 frac.rightDelimiter = ")"
                 return frac
             }
+
             "sqrt" -> {
                 // A sqrt command with one argument
                 val rad = MTRadical()
@@ -450,6 +446,7 @@ class MTMathListBuilder(str: String) {
                 }
                 return rad
             }
+
             "left" -> {
                 // Save the current inner while a new one gets built.
                 val oldInner: MTInner? = currentInnerAtom
@@ -469,22 +466,26 @@ class MTMathListBuilder(str: String) {
                 currentInnerAtom = oldInner
                 return newInner
             }
+
             "overline" -> {
                 // The overline command has 1 arguments
                 val over = MTOverLine()
                 over.innerList = this.buildInternal(true)
                 return over
             }
+
             "underline" -> {
                 // The underline command has 1 arguments
                 val under = MTUnderLine()
                 under.innerList = this.buildInternal(true)
                 return under
             }
+
             "begin" -> {
                 val env = this.readEnvironment() ?: return null
                 return buildTable(env, null, false)
             }
+
             "color" -> {
                 // A color command has 2 arguments
                 val mathColor = MTMathColor()
@@ -492,6 +493,7 @@ class MTMathListBuilder(str: String) {
                 mathColor.innerList = this.buildInternal(true)
                 return mathColor
             }
+
             "textcolor" -> {
                 // A textcolor command has 2 arguments
                 val mathColor = MTMathTextColor()
@@ -499,6 +501,7 @@ class MTMathListBuilder(str: String) {
                 mathColor.innerList = this.buildInternal(true)
                 return mathColor
             }
+
             else -> {
                 this.setError(MTParseErrors.InvalidCommand, "Invalid command $command")
                 return null
@@ -507,11 +510,13 @@ class MTMathListBuilder(str: String) {
     }
 
     private val fractionCommands: HashMap<String, Array<String>> =
-            hashMapOf("over" to arrayOf(""),
-                    "atop" to arrayOf(""),
-                    "choose" to arrayOf("(", ")"),
-                    "brack" to arrayOf("[", "]"),
-                    "brace" to arrayOf("{", "}"))
+        hashMapOf(
+            "over" to arrayOf(""),
+            "atop" to arrayOf(""),
+            "choose" to arrayOf("(", ")"),
+            "brack" to arrayOf("[", "]"),
+            "brace" to arrayOf("{", "}")
+        )
 
     private fun stopCommand(command: String, list: MTMathList, stopChar: Char): MTMathList? {
 
@@ -528,6 +533,7 @@ class MTMathListBuilder(str: String) {
                 // return the list read so far.
                 return list
             }
+
             "over", "atop", "choose", "brack", "brace" -> {
                 val frac = if (command == "over") {
                     MTFraction()
@@ -548,12 +554,13 @@ class MTMathListBuilder(str: String) {
                 fracList.addAtom(frac)
                 return fracList
             }
+
             "\\", "cr" -> {
                 val ce = this.currentEnv
                 if (ce != null) {
                     // Stop the current list and increment the row count
                     // ++ causes kotlin compile crash
-                    ce.numRows = ce.numRows + 1
+                    ce.numRows += 1
                     this.currentEnv = ce
                     return list
                 } else {
@@ -564,6 +571,7 @@ class MTMathListBuilder(str: String) {
                     return null
                 }
             }
+
             "end" -> {
                 if (currentEnv == null) {
                     this.setError(MTParseErrors.MissingBegin, "Missing \\begin")
@@ -572,7 +580,10 @@ class MTMathListBuilder(str: String) {
                     val env = this.readEnvironment() ?: return null
 
                     if (env != currentEnv?.envName) {
-                        this.setError(MTParseErrors.InvalidEnv, "Begin environment name $currentEnv.envName does not match end name: $env")
+                        this.setError(
+                            MTParseErrors.InvalidEnv,
+                            "Begin environment name $currentEnv.envName does not match end name: $env"
+                        )
                         return null
                     }
                     // Finish the current environment.
@@ -580,6 +591,7 @@ class MTMathListBuilder(str: String) {
                     return list
                 }
             }
+
             else -> {
                 return null
             }
@@ -590,7 +602,10 @@ class MTMathListBuilder(str: String) {
     private fun applyModifier(modifier: String, atom: MTMathAtom?): (Boolean) {
         if (modifier == "limits") {
             if (atom == null || atom.type != MTMathAtomType.KMTMathAtomLargeOperator) {
-                this.setError(MTParseErrors.InvalidLimits, "limits can only be applied to an operator.")
+                this.setError(
+                    MTParseErrors.InvalidLimits,
+                    "limits can only be applied to an operator."
+                )
             } else {
                 val op: MTLargeOperator = atom as MTLargeOperator
                 op.hasLimits = true
@@ -598,7 +613,10 @@ class MTMathListBuilder(str: String) {
             return true
         } else if (modifier == "nolimits") {
             if (atom == null || atom.type != MTMathAtomType.KMTMathAtomLargeOperator) {
-                this.setError(MTParseErrors.InvalidLimits, "nolimits can only be applied to an operator.")
+                this.setError(
+                    MTParseErrors.InvalidLimits,
+                    "nolimits can only be applied to an operator."
+                )
                 return true
             } else {
                 val op: MTLargeOperator = atom as MTLargeOperator
@@ -610,17 +628,17 @@ class MTMathListBuilder(str: String) {
     }
 
     fun copyError(dst: MTParseError) {
-        dst.copyFrom(this.parseerror)
+        dst.copyFrom(this.parseError)
     }
 
     fun errorActive(): Boolean {
-        return this.parseerror != null
+        return this.parseError != null
     }
 
     private fun setError(errorcode: MTParseErrors, message: String) {
         // Only record the first error.
-        if (this.parseerror == null) {
-            this.parseerror = MTParseError(errorcode, message)
+        if (this.parseError == null) {
+            this.parseError = MTParseError(errorcode, message)
         }
     }
 
@@ -637,7 +655,7 @@ class MTMathListBuilder(str: String) {
             rows[currentRow].add(currentCol, firstList)
             if (isRow) {
                 // ++ causes kotlin compile crash
-                newenv.numRows = newenv.numRows + 1
+                newenv.numRows += 1
                 currentRow++
                 rows.add(currentRow, mutableListOf())
             } else {
@@ -645,11 +663,9 @@ class MTMathListBuilder(str: String) {
             }
         }
         while (!newenv.ended && this.hasCharacters()) {
-            val list: MTMathList? = this.buildInternal(false)
-            if (list == null) {
-                // If there is an error building the list, bail out early.
+            val list: MTMathList = this.buildInternal(false)
+                ?: // If there is an error building the list, bail out early.
                 return null
-            }
             rows[currentRow].add(currentCol, list)
             currentCol++
             if (newenv.numRows > currentRow) {
@@ -666,7 +682,7 @@ class MTMathListBuilder(str: String) {
         val table: MTMathAtom? = MTMathAtom.tableWithEnvironment(newenv.envName, rows, errord)
 
         if (table == null) {
-            parseerror = errord
+            parseError = errord
             return null
         }
         // reinstate the old env.
@@ -692,33 +708,32 @@ class MTMathListBuilder(str: String) {
         }
 
         private val spaceToCommands: HashMap<Float, String> =
-                hashMapOf(3.0f to ",",
-                        4.0f to ">",
-                        5.0f to ";",
-                        -3.0f to "!",
-                        18.0f to "quad",
-                        36.0f to "qquad")
+            hashMapOf(
+                3.0f to ",",
+                4.0f to ">",
+                5.0f to ";",
+                -3.0f to "!",
+                18.0f to "quad",
+                36.0f to "qquad"
+            )
 
         private val styleToCommands: HashMap<MTLineStyle, String> =
-                hashMapOf(
-                    MTLineStyle.KMTLineStyleDisplay to "displaystyle",
-                        MTLineStyle.KMTLineStyleText to "textstyle",
-                        MTLineStyle.KMTLineStyleScript to "scriptstyle",
-                        MTLineStyle.KMTLineStyleScriptScript to "scriptscriptstyle")
+            hashMapOf(
+                MTLineStyle.KMTLineStyleDisplay to "displaystyle",
+                MTLineStyle.KMTLineStyleText to "textstyle",
+                MTLineStyle.KMTLineStyleScript to "scriptstyle",
+                MTLineStyle.KMTLineStyleScriptScript to "scriptscriptstyle"
+            )
 
         private fun delimToLatexString(delim: MTMathAtom): String {
             val command: String? = MTMathAtom.delimiterNameForBoundaryAtom(delim)
-            if (command != null) {
-                val singleChars: Array<String> = arrayOf("(", ")", "[", "]", "<", ">", "|", ".", "/")
-                if (singleChars.contains(command)) {
-                    return command
-                } else if (command == "||") {
-                    return "\\|" // special case for ||
-                } else {
-                    return "\\$command"
-                }
+            val singleChars: Array<String> = arrayOf("(", ")", "[", "]", "<", ">", "|", ".", "/")
+            return when {
+                command == null -> ""
+                singleChars.contains(command) -> command
+                command == "||" -> "\\|" // special case for ||
+                else -> "\\$command"
             }
-            return ""
         }
 
         fun toLatexString(ml: MTMathList): String {
@@ -780,17 +795,17 @@ class MTMathListBuilder(str: String) {
 
                     if (leftBoundary != null || rightBoundary != null) {
                         if (leftBoundary != null) {
-                            val ds: String = this.delimToLatexString(leftBoundary)
+                            val ds: String = delimToLatexString(leftBoundary)
                             str.append("\\left$ds ")
                         } else {
                             str.append("\\left. ")
                         }
                         val il = inner.innerList
                         if (il != null) {
-                            str.append(this.toLatexString(il))
+                            str.append(toLatexString(il))
                         }
                         if (rightBoundary != null) {
-                            val ds: String = this.delimToLatexString(rightBoundary)
+                            val ds: String = delimToLatexString(rightBoundary)
                             str.append("\\right$ds ")
                         } else {
                             str.append("\\right. ")
@@ -799,7 +814,7 @@ class MTMathListBuilder(str: String) {
                         str.append("{")
                         val il = inner.innerList
                         if (il != null) {
-                            str.append(this.toLatexString(il))
+                            str.append(toLatexString(il))
                         }
                         str.append("}")
                     }
@@ -818,18 +833,20 @@ class MTMathListBuilder(str: String) {
                             if (table.environment == "matrix") {
                                 if (cell.atoms.size >= 1 && cell.atoms[0].type == MTMathAtomType.KMTMathAtomStyle) {
                                     // remove the first atom.
-                                    val atoms: MutableList<MTMathAtom> = cell.atoms.subList(1, cell.atoms.size)
+                                    val atoms: MutableList<MTMathAtom> =
+                                        cell.atoms.subList(1, cell.atoms.size)
                                     cell = MTMathList(atoms)
                                 }
                             }
                             if (table.environment == "eqalign" || table.environment == "aligned" || table.environment == "split") {
                                 if (j == 1 && cell.atoms.size >= 1 && cell.atoms[0].type == MTMathAtomType.KMTMathAtomOrdinary && cell.atoms[0].nucleus.isEmpty()) {
                                     // Empty nucleus added for spacing. Remove it.
-                                    val atoms: MutableList<MTMathAtom> = cell.atoms.subList(1, cell.atoms.size)
+                                    val atoms: MutableList<MTMathAtom> =
+                                        cell.atoms.subList(1, cell.atoms.size)
                                     cell = MTMathList(atoms)
                                 }
                             }
-                            str.append(this.toLatexString(cell))
+                            str.append(toLatexString(cell))
                             if (j < row.size - 1) {
                                 str.append("&")
                             }
@@ -860,7 +877,8 @@ class MTMathListBuilder(str: String) {
                     val op = atom as MTLargeOperator
                     val command: String? = MTMathAtom.latexSymbolNameForAtom(atom)
                     if (command != null) {
-                        val originalOp: MTLargeOperator = MTMathAtom.atomForLatexSymbolName(command) as MTLargeOperator
+                        val originalOp: MTLargeOperator =
+                            MTMathAtom.atomForLatexSymbolName(command) as MTLargeOperator
                         str.append("\\$command ")
                         if (originalOp.hasLimits != op.hasLimits) {
                             if (op.hasLimits) {
@@ -876,7 +894,7 @@ class MTMathListBuilder(str: String) {
                     if (command != null) {
                         str.append("\\$command ")
                     } else {
-                        //mkern parsing not yet implemented so this code does not have a test case
+                        // mkern parsing not yet implemented so this code does not have a test case
                         val s = "\\mkern%.1fmu".format(space.space)
                         str.append(s)
                     }
@@ -903,13 +921,13 @@ class MTMathListBuilder(str: String) {
 
                 val superscript = atom.superScript
                 if (superscript != null) {
-                    val s = this.toLatexString(superscript)
+                    val s = toLatexString(superscript)
                     str.append("^{$s}")
                 }
 
                 val subscript = atom.subScript
                 if (subscript != null) {
-                    val s = this.toLatexString(subscript)
+                    val s = toLatexString(subscript)
                     str.append("_{$s}")
                 }
             }
@@ -919,6 +937,4 @@ class MTMathListBuilder(str: String) {
             return str.toString()
         }
     }
-
 }
-

@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.pvporbit.freetype.FreeTypeConstants
 import icu.ketal.katexmath.parse.MathDisplayException
-import com.agog.mathdisplay.render.MTFontMathTable
 
 
 class MTDrawFreeType(val mathfont: MTFontMathTable) {

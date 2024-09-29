@@ -1,9 +1,5 @@
 package icu.ketal.katexmath.parse
 
-import com.agog.mathdisplay.parse.MTMathAtomFactory
-import com.agog.mathdisplay.parse.MTMathList
-import com.agog.mathdisplay.parse.MTMathListBuilder
-
 
 class MathDisplayException(override var message: String) : Exception(message)
 
@@ -315,7 +311,7 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
                 }
 
                 MTMathAtomType.KMTMathAtomSpace -> {
-                    return MTMathSpace(0.0f)
+                    return MTMathSpace(0f)
                 }
 
                 MTMathAtomType.KMTMathAtomColor -> {
@@ -784,7 +780,7 @@ class MTAccent(nucleus: String) : MTMathAtom(MTMathAtomType.KMTMathAtomAccent, n
 // Spaces  are  KMTMathAtomSpace with a float for space and no nucleus
 class MTMathSpace() : MTMathAtom(MTMathAtomType.KMTMathAtomSpace, "") {
 
-    var space: Float = 0.0f
+    var space: Float = 0f
 
     constructor(sp: Float) : this() {
         space = sp

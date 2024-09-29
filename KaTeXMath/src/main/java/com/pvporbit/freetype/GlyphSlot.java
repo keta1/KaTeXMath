@@ -51,7 +51,6 @@ public class GlyphSlot extends Pointer {
     }
 
     public static class Advance {
-
         private final long x, y;
 
         public Advance(long x, long y) {

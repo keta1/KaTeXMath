@@ -2,16 +2,17 @@ package icu.ketal.katexmath
 
 import android.view.View
 import icu.ketal.katexmath.render.MTFont
-import com.agog.mathdisplay.render.MTMathListDisplay
+import icu.ketal.katexmath.render.MTMathListDisplay
 import android.content.Context
 import android.util.AttributeSet
-import com.agog.mathdisplay.parse.*
-import com.agog.mathdisplay.render.MTTypesetter
+import icu.ketal.katexmath.render.MTTypesetter
 import icu.ketal.katexmath.MTMathView.MTTextAlignment.*
 import icu.ketal.katexmath.MTMathView.MTMathViewMode.*
 import android.content.res.Resources
 import android.graphics.*
 import icu.ketal.katexmath.parse.MTLineStyle
+import icu.ketal.katexmath.parse.MTMathList
+import icu.ketal.katexmath.parse.MTMathListBuilder
 import icu.ketal.katexmath.parse.MTParseError
 import icu.ketal.katexmath.parse.MTParseErrors
 
@@ -198,7 +199,7 @@ class MTMathView @JvmOverloads constructor(
      * When parsing errors are drawn this will control the size of the resulting error text and therefore view measured size.
      * In device pixels
      */
-    val errorFontSize = 20.0f
+    val errorFontSize = 20f
 
     private fun drawError(canvas: Canvas): Boolean {
         if (!displayError()) {
@@ -210,7 +211,7 @@ class MTMathView @JvmOverloads constructor(
         paint.color = Color.RED
         paint.textSize = convertDpToPixel(errorFontSize)
         val r = errorBounds()
-        canvas.drawText(lastError.errorDesc, 0.0f, -r.top.toFloat(), paint)
+        canvas.drawText(lastError.errorDesc, 0f, -r.top.toFloat(), paint)
         return true
     }
 
@@ -267,7 +268,7 @@ class MTMathView @JvmOverloads constructor(
             dl.position.x = textX.toFloat()
             dl.position.y = textY
             canvas.save()
-            canvas.translate(0.0f, height.toFloat())
+            canvas.translate(0f, height.toFloat())
             canvas.scale(1.0f, -1.0f)
             dl.draw(canvas)
             canvas.restore()
@@ -287,8 +288,8 @@ class MTMathView @JvmOverloads constructor(
             displayList = MTTypesetter.createLineForMathList(ml, font!!, currentStyle)
             dl = displayList
         }
-        var height = 0.0f
-        var width = 0.0f
+        var height = 0f
+        var width = 0f
 
         if (dl != null) {
             height = dl.ascent + dl.descent + ypad

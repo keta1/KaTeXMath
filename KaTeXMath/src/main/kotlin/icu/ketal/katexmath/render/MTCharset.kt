@@ -15,10 +15,9 @@ fun numberOfGlyphs(s: String): Int {
     return (s.codePointCount(0, s.length))
 }
 
-data class CGGlyph(var gid: Int = 0, var glyphAscent: Float = 0.0f, var glyphDescent: Float = 0.0f, var glyphWidth: Float = 0.0f) {
+data class CGGlyph(var gid: Int = 0, var glyphAscent: Float = 0f, var glyphDescent: Float = 0f, var glyphWidth: Float = 0f) {
     val isValid: Boolean
         get() = gid != 0
-
 }
 
 const val kMTUnicodeGreekLowerStart: Char = '\u03B1'
@@ -60,15 +59,12 @@ fun isGREEKSYMBOL(ch: Char): Boolean {
 }
 
 class MTCodepointChar(val codepoint: Int) {
-
     fun toUnicodeString(): String {
         val cs = Character.toChars(codepoint)
-        val sb = StringBuffer()
+        val sb = StringBuilder()
         sb.append(cs)
-        val sbs = sb.toString()
-        return (sbs)
+        return sb.toString()
     }
-
 }
 
 
@@ -389,7 +385,6 @@ fun styleCharacter(ch: Char, fontStyle: MTFontStyle): MTCodepointChar {
         }
         else -> {
             throw MathDisplayException("Unknown style $fontStyle for font.")
-
         }
     }
 }
@@ -397,7 +392,7 @@ fun styleCharacter(ch: Char, fontStyle: MTFontStyle): MTCodepointChar {
 // This can only take single unicode character sequence as input.
 // Should never be called with a codepoint that requires 2 escaped characters to represent
 fun changeFont(str: String, fontStyle: MTFontStyle): String {
-    val ret = StringBuffer()
+    val ret = StringBuilder()
     val ca = str.toCharArray()
     for (ch in ca) {
         val codepoint = styleCharacter(ch, fontStyle)
