@@ -1,8 +1,8 @@
-package com.agog.mathdisplay.render
+package icu.ketal.katexmath.render
 
-import com.agog.mathdisplay.parse.MTMathAtomType
-import com.agog.mathdisplay.parse.MathDisplayException
-import com.agog.mathdisplay.render.MTInterElementSpaceType.*
+import icu.ketal.katexmath.parse.MTMathAtomType
+import icu.ketal.katexmath.parse.MathDisplayException
+import icu.ketal.katexmath.render.MTInterElementSpaceType.*
 
 /**
  * Created by greg on 3/13/18.

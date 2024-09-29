@@ -10,7 +10,6 @@ import com.pvporbit.freetype.Utils.Pointer;
  * Each library is completely independent from the others; it is the root of a set of objects like fonts, faces, sizes, etc.
  */
 public class Library extends Pointer {
-
     public Library(long pointer) {
         super(pointer);
     }

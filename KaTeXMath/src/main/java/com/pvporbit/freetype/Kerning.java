@@ -1,7 +1,6 @@
 package com.pvporbit.freetype;
 
 public class Kerning {
-
     private final int x, y;
 
     public Kerning(int x, int y) {

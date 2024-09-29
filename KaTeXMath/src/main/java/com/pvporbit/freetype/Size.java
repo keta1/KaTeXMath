@@ -3,7 +3,6 @@ package com.pvporbit.freetype;
 import com.pvporbit.freetype.Utils.Pointer;
 
 public class Size extends Pointer {
-
     public Size(long pointer) {
         super(pointer);
     }

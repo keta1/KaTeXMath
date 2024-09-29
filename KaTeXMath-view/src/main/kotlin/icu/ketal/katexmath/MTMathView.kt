@@ -11,6 +11,9 @@ import icu.ketal.katexmath.MTMathView.MTTextAlignment.*
 import icu.ketal.katexmath.MTMathView.MTMathViewMode.*
 import android.content.res.Resources
 import android.graphics.*
+import icu.ketal.katexmath.parse.MTLineStyle
+import icu.ketal.katexmath.parse.MTParseError
+import icu.ketal.katexmath.parse.MTParseErrors
 
 
 /** View subclass for rendering LaTeX Math.
@@ -63,7 +66,7 @@ class MTMathView @JvmOverloads constructor(
             field = value
 
             val list: MTMathList? = MTMathListBuilder.buildFromString(latex, lastError)
-            if (lastError.errorcode != MTParseErrors.ErrorNone) {
+            if (lastError.errorCode != MTParseErrors.ErrorNone) {
                 this._mathList = null
             } else {
                 this._mathList = list
@@ -178,7 +181,7 @@ class MTMathView @JvmOverloads constructor(
             invalidate()
         }
 
-    private var currentStyle = MTLineStyle.KMTLineStyleDisplay
+    private val currentStyle: MTLineStyle
         get() {
             return when (labelMode) {
                 KMTMathViewModeDisplay -> MTLineStyle.KMTLineStyleDisplay
@@ -187,7 +190,7 @@ class MTMathView @JvmOverloads constructor(
         }
 
     private fun displayError(): Boolean {
-        return (lastError.errorcode != MTParseErrors.ErrorNone &&
+        return (lastError.errorCode != MTParseErrors.ErrorNone &&
                 this.displayErrorInline)
     }
 
@@ -207,23 +210,22 @@ class MTMathView @JvmOverloads constructor(
         paint.color = Color.RED
         paint.textSize = convertDpToPixel(errorFontSize)
         val r = errorBounds()
-        canvas.drawText(lastError.errordesc, 0.0f, -r.top.toFloat(), paint)
+        canvas.drawText(lastError.errorDesc, 0.0f, -r.top.toFloat(), paint)
         return true
     }
 
     private fun errorBounds(): Rect {
         if (displayError()) {
             val paint = Paint()
-            paint.typeface = Typeface.DEFAULT// your preference here
+            paint.typeface = Typeface.DEFAULT // your preference here
             paint.textSize = convertDpToPixel(errorFontSize)
             val bounds = Rect()
-            paint.getTextBounds(lastError.errordesc, 0, lastError.errordesc!!.length, bounds)
+            paint.getTextBounds(lastError.errorDesc, 0, lastError.errorDesc.length, bounds)
             return bounds
         } else {
             return Rect(0, 0, 0, 0)
         }
     }
-
 
     override fun onDraw(canvas: Canvas) {
         // call the super method to keep any drawing from the parent side.
@@ -298,6 +300,4 @@ class MTMathView @JvmOverloads constructor(
         width = maxOf(width, r.width().toFloat())
         setMeasuredDimension((width + 1.0f).toInt(), (height + 1.0f).toInt())
     }
-
-
 }

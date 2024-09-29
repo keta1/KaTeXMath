@@ -3,7 +3,6 @@ package com.pvporbit.freetype;
 import com.pvporbit.freetype.Utils.Pointer;
 
 public class CharMap extends Pointer {
-
     public CharMap(long pointer) {
         super(pointer);
     }

@@ -1,5 +1,8 @@
 package com.agog.mathdisplay.parse
 
+import icu.ketal.katexmath.parse.MTMathAtom
+import icu.ketal.katexmath.parse.MTMathAtomType
+
 
 /**
 @typedef MTColumnAlignment

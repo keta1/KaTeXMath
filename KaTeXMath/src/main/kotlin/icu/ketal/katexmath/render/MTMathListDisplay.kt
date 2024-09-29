@@ -6,12 +6,13 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Build
-import com.agog.mathdisplay.parse.NSNotFound
-import com.agog.mathdisplay.parse.NSRange
-
-import com.agog.mathdisplay.parse.*
+import icu.ketal.katexmath.parse.NSNotFound
+import icu.ketal.katexmath.parse.NSRange
 
 import com.agog.mathdisplay.render.MTLinePosition.*
+import icu.ketal.katexmath.parse.MTMathAtom
+import icu.ketal.katexmath.render.CGGlyph
+import icu.ketal.katexmath.render.MTDrawFreeType
 import icu.ketal.katexmath.render.MTFont
 
 const val DEBUG = false

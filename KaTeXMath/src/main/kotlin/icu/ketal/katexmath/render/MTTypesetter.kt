@@ -2,12 +2,35 @@ package com.agog.mathdisplay.render
 
 import android.graphics.Color
 import com.agog.mathdisplay.parse.*
-import com.agog.mathdisplay.parse.MTMathAtomType.*
-import com.agog.mathdisplay.parse.MTLineStyle.*
+import icu.ketal.katexmath.parse.MTMathAtomType.*
+import icu.ketal.katexmath.parse.MTLineStyle.*
 import com.agog.mathdisplay.parse.MTColumnAlignment.*
+import icu.ketal.katexmath.parse.MTAccent
+import icu.ketal.katexmath.parse.MTFraction
+import icu.ketal.katexmath.parse.MTInner
+import icu.ketal.katexmath.parse.MTLargeOperator
+import icu.ketal.katexmath.parse.MTLineStyle
+import icu.ketal.katexmath.parse.MTMathAtom
+import icu.ketal.katexmath.parse.MTMathAtomType
+import icu.ketal.katexmath.parse.MTMathColor
+import icu.ketal.katexmath.parse.MTMathSpace
+import icu.ketal.katexmath.parse.MTMathStyle
+import icu.ketal.katexmath.parse.MTMathTextColor
+import icu.ketal.katexmath.parse.MTOverLine
+import icu.ketal.katexmath.parse.MTRadical
+import icu.ketal.katexmath.parse.MTUnderLine
+import icu.ketal.katexmath.parse.MathDisplayException
+import icu.ketal.katexmath.parse.NSNotFound
+import icu.ketal.katexmath.parse.NSRange
 
-import com.agog.mathdisplay.render.MTInterElementSpaceType.*
+import icu.ketal.katexmath.render.MTInterElementSpaceType.*
+import icu.ketal.katexmath.render.CGGlyph
 import icu.ketal.katexmath.render.MTFont
+import icu.ketal.katexmath.render.MTInterElementSpaceType
+import icu.ketal.katexmath.render.changeFont
+import icu.ketal.katexmath.render.getInterElementSpaceArrayIndexForType
+import icu.ketal.katexmath.render.interElementSpaceArray
+import icu.ketal.katexmath.render.numberOfGlyphs
 
 
 // Delimiter shortfall from plain.tex

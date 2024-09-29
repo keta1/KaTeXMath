@@ -1,8 +1,9 @@
 package com.agog.mathdisplay.render
 
-import com.agog.mathdisplay.parse.MathDisplayException
+import icu.ketal.katexmath.parse.MathDisplayException
 import com.pvporbit.freetype.*
 import com.pvporbit.freetype.FreeTypeConstants.FT_LOAD_NO_SCALE
+import icu.ketal.katexmath.render.CGGlyph
 import icu.ketal.katexmath.render.MTFont
 import java.io.IOException
 import java.io.InputStream

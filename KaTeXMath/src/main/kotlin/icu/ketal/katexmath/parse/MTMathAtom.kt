@@ -1,4 +1,8 @@
-package com.agog.mathdisplay.parse
+package icu.ketal.katexmath.parse
+
+import com.agog.mathdisplay.parse.MTMathAtomFactory
+import com.agog.mathdisplay.parse.MTMathList
+import com.agog.mathdisplay.parse.MTMathListBuilder
 
 
 class MathDisplayException(override var message: String) : Exception(message)
@@ -142,7 +146,7 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
     var superScript: MTMathList? = null
         set(value) {
             if (!this.scriptsAllowed()) {
-                throw MathDisplayException("Superscripts not allowed for atom " + this)
+                throw MathDisplayException("Superscripts not allowed for atom $this")
             }
             field = value
         }
@@ -151,7 +155,7 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
     var subScript: MTMathList? = null
         set(value) {
             if (!this.scriptsAllowed()) {
-                throw MathDisplayException("Subscripts not allowed for atom " + this)
+                throw MathDisplayException("Subscripts not allowed for atom $this")
             }
             field = value
         }
@@ -324,10 +328,10 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
         }
 
         fun atomForCharacter(ch: Char): MTMathAtom? {
-            val chStr = Character.toString(ch)
+            val chStr = ch.toString()
 
 
-            if (ch.toInt() < 0x21 || ch.toInt() > 0x7E) {
+            if (ch.code < 0x21 || ch.code > 0x7E) {
                 // skip non ascii characters and spaces
                 return null
             } else if (ch == '$' || ch == '%' || ch == '#' || ch == '&' || ch == '~' || ch == '\'') {
@@ -444,9 +448,9 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
 
     /// Fuse the given atom with this one by combining their nucleii.
     fun fuse(atom: MTMathAtom) {
-        if (this.subScript != null) throw MathDisplayException("Cannot fuse into an atom which has a subscript: " + this)
-        if (this.superScript != null) throw MathDisplayException("Cannot fuse into an atom which has a superscript: " + this)
-        if (this.type != atom.type) throw MathDisplayException("Only atoms of the same type can be fused: " + this + " " + atom)
+        if (this.subScript != null) throw MathDisplayException("Cannot fuse into an atom which has a subscript: $this")
+        if (this.superScript != null) throw MathDisplayException("Cannot fuse into an atom which has a superscript: $this")
+        if (this.type != atom.type) throw MathDisplayException("Only atoms of the same type can be fused: $this $atom")
 
         // Update the fused atoms list
         if (this.fusedAtoms.size == 0) {

@@ -1,9 +1,8 @@
 package icu.ketal.katexmath.render
 
 import android.content.res.AssetManager
-import com.agog.mathdisplay.parse.MathDisplayException
+import icu.ketal.katexmath.parse.MathDisplayException
 import android.util.Log
-import com.agog.mathdisplay.render.CGGlyph
 import com.agog.mathdisplay.render.MTFontMathTable
 
 fun PackageWarning(str: String) {

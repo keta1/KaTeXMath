@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import com.pvporbit.freetype.GlyphSlot.Advance;
 
 public class FreeType {
-
     /* FreeType functions */
 
     public static native long FT_Init_FreeType();

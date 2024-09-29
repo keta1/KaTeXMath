@@ -3,7 +3,6 @@ package com.pvporbit.freetype;
 import com.pvporbit.freetype.Utils.Pointer;
 
 public class GlyphMetrics extends Pointer {
-
     public GlyphMetrics(long pointer) {
         super(pointer);
     }

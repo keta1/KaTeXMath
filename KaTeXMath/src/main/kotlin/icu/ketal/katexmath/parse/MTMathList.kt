@@ -1,5 +1,10 @@
 package com.agog.mathdisplay.parse
 
+import icu.ketal.katexmath.parse.MTMathAtom
+import icu.ketal.katexmath.parse.MTMathAtomType
+import icu.ketal.katexmath.parse.MathDisplayException
+import icu.ketal.katexmath.parse.NSRange
+
 class MTMathList {
     var atoms = mutableListOf<MTMathAtom>()
 

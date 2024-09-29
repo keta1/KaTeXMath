@@ -10,6 +10,25 @@
 //
 package com.agog.mathdisplay.parse
 
+import icu.ketal.katexmath.parse.MTAccent
+import icu.ketal.katexmath.parse.MTFontStyle
+import icu.ketal.katexmath.parse.MTFraction
+import icu.ketal.katexmath.parse.MTInner
+import icu.ketal.katexmath.parse.MTLargeOperator
+import icu.ketal.katexmath.parse.MTLineStyle
+import icu.ketal.katexmath.parse.MTMathAtom
+import icu.ketal.katexmath.parse.MTMathAtomType
+import icu.ketal.katexmath.parse.MTMathColor
+import icu.ketal.katexmath.parse.MTMathSpace
+import icu.ketal.katexmath.parse.MTMathStyle
+import icu.ketal.katexmath.parse.MTMathTextColor
+import icu.ketal.katexmath.parse.MTOverLine
+import icu.ketal.katexmath.parse.MTParseError
+import icu.ketal.katexmath.parse.MTParseErrors
+import icu.ketal.katexmath.parse.MTRadical
+import icu.ketal.katexmath.parse.MTUnderLine
+import icu.ketal.katexmath.parse.MathDisplayException
+
 
 // NSString *const MTParseError = "ParseError"
 
@@ -132,7 +151,7 @@ class MTMathListBuilder(str: String) {
                     if (stopChar.toInt() != 0) throw MathDisplayException("This should have been handled before")
                     // We encountered a closing brace when there is no stop set, that means there was no
                     // corresponding opening brace.
-                    this.setError(com.agog.mathdisplay.parse.MTParseErrors.MismatchBraces, "Mismatched braces.")
+                    this.setError(MTParseErrors.MismatchBraces, "Mismatched braces.")
                     return null
                 }
                 '\\' -> {
@@ -681,7 +700,8 @@ class MTMathListBuilder(str: String) {
                         36.0f to "qquad")
 
         private val styleToCommands: HashMap<MTLineStyle, String> =
-                hashMapOf(MTLineStyle.KMTLineStyleDisplay to "displaystyle",
+                hashMapOf(
+                    MTLineStyle.KMTLineStyleDisplay to "displaystyle",
                         MTLineStyle.KMTLineStyleText to "textstyle",
                         MTLineStyle.KMTLineStyleScript to "scriptstyle",
                         MTLineStyle.KMTLineStyleScriptScript to "scriptscriptstyle")

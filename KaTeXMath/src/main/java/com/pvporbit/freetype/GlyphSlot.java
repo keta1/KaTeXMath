@@ -4,7 +4,6 @@ import com.pvporbit.freetype.FreeTypeConstants.FT_Render_Mode;
 import com.pvporbit.freetype.Utils.Pointer;
 
 public class GlyphSlot extends Pointer {
-
     public GlyphSlot(long pointer) {
         super(pointer);
     }

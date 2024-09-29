@@ -12,9 +12,8 @@ import java.nio.ByteBuffer
 
   Best reference I've found for math table format
   https://docs.microsoft.com/en-us/typography/opentype/spec/math
-
-
  */
+
 private val constTable = arrayOf(
         "int16", "ScriptPercentScaleDown",
         "int16", "ScriptScriptPercentScaleDown",
@@ -106,7 +105,7 @@ class MTFreeTypeMathTable(val pointer: Long, val data: ByteBuffer) {
                 readMatchedTable(mathGlyphInfoOffset + mathItalicsCorrectionInfo, italicsCorrectionInfo)
                 readMatchedTable(mathGlyphInfoOffset + mathTopAccentAttachment, topAccentAttachment)
 
-                readvariants(mathVariantsOffset)
+                readVariants(mathVariantsOffset)
             }
         }
     }
@@ -173,9 +172,7 @@ class MTFreeTypeMathTable(val pointer: Long, val data: ByteBuffer) {
             // indexed by glyphid
             table[coverage[i]] = getDataRecord()
         }
-
     }
-
 
     private fun readConstants(foffset: Int) {
         data.position(foffset)
@@ -257,13 +254,13 @@ class MTFreeTypeMathTable(val pointer: Long, val data: ByteBuffer) {
             val advanceMeasurement = getDataSInt()
             variants.add(v, MathGlyphVariantRecord(variantGlyph, advanceMeasurement))
         }
-        val assembly = if (glyphAssemblyOff == 0) null else readassembly(fOffset + glyphAssemblyOff)
+        val assembly = if (glyphAssemblyOff == 0) null else readAssembly(fOffset + glyphAssemblyOff)
         val construction = MathGlyphConstruction(assembly, variants.toTypedArray())
         data.position(currentPos)
         return construction
     }
 
-    private fun readassembly(foffset: Int): GlyphAssembly {
+    private fun readAssembly(foffset: Int): GlyphAssembly {
         val currentPos = data.position()
         data.position(foffset)
 
@@ -285,7 +282,7 @@ class MTFreeTypeMathTable(val pointer: Long, val data: ByteBuffer) {
     }
 
 
-    private fun readvariants(foffset: Int) {
+    private fun readVariants(foffset: Int) {
         data.position(foffset)
 
         this.minConnectorOverlap = getDataSInt()

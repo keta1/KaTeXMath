@@ -4,7 +4,6 @@ package com.pvporbit.freetype;
  * This is a simple class wich contains the version information about FreeType.
  */
 public class LibraryVersion {
-
     private int major, minor, patch; // Example: 2.6.0
 
     public LibraryVersion(int major, int minor, int patch) {

@@ -1,4 +1,4 @@
-package com.agog.mathdisplay.parse
+package icu.ketal.katexmath.parse
 
 /**
  * Created by greg on 2/12/18.
@@ -37,17 +37,17 @@ enum class MTParseErrors {
     InvalidLimits
 }
 
-data class MTParseError(var errorcode: MTParseErrors = MTParseErrors.ErrorNone, var errordesc: String = "") {
+data class MTParseError(var errorCode: MTParseErrors = MTParseErrors.ErrorNone, var errorDesc: String = "") {
 
     fun copyFrom(src: MTParseError?) {
         if (src != null) {
-            this.errorcode = src.errorcode
-            this.errordesc = src.errordesc
+            this.errorCode = src.errorCode
+            this.errorDesc = src.errorDesc
         }
     }
 
     fun clear() {
-        this.errorcode = MTParseErrors.ErrorNone
-        this.errordesc = ""
+        this.errorCode = MTParseErrors.ErrorNone
+        this.errorDesc = ""
     }
 }

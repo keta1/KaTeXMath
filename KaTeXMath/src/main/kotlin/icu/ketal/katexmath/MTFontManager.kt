@@ -2,7 +2,7 @@ package icu.ketal.katexmath
 
 import android.content.Context
 import android.content.res.AssetManager
-import com.agog.mathdisplay.parse.MathDisplayException
+import icu.ketal.katexmath.parse.MathDisplayException
 import icu.ketal.katexmath.render.MTFont
 
 

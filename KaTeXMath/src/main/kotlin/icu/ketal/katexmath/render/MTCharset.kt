@@ -1,7 +1,7 @@
-package com.agog.mathdisplay.render
+package icu.ketal.katexmath.render
 
-import com.agog.mathdisplay.parse.MTFontStyle
-import com.agog.mathdisplay.parse.MathDisplayException
+import icu.ketal.katexmath.parse.MTFontStyle
+import icu.ketal.katexmath.parse.MathDisplayException
 
 /**
  * Created by greg on 3/13/18.
@@ -52,7 +52,7 @@ fun greekSymbolOrder(ch: Char): Int {
     // These greek symbols that always appear in unicode in this particular order after the alphabet
     // The symbols are epsilon, vartheta, varkappa, phi, varrho, varpi.
     val greekSymbols: Array<Int> = arrayOf(0x03F5, 0x03D1, 0x03F0, 0x03D5, 0x03F1, 0x03D6)
-    return greekSymbols.indexOf(ch.toInt())
+    return greekSymbols.indexOf(ch.code)
 }
 
 fun isGREEKSYMBOL(ch: Char): Boolean {
@@ -105,7 +105,7 @@ fun getItalicized(ch: Char): MTCodepointChar {
         }
     }
     // Note there are no italicized numbers in unicode so we don't support italicizing numbers.
-    return MTCodepointChar(ch.toInt())
+    return MTCodepointChar(ch.code)
 }
 
 // mathbf
@@ -139,7 +139,7 @@ fun getBold(ch: Char): MTCodepointChar {
             return MTCodepointChar(kMTUnicodeNumberBoldStart + (ch - '0'))
         }
     }
-    return MTCodepointChar(ch.toInt())
+    return MTCodepointChar(ch.code)
 }
 
 // mathbfit
@@ -173,7 +173,7 @@ fun getBoldItalic(ch: Char): MTCodepointChar {
             return getBold(ch)
         }
     }
-    return MTCodepointChar(ch.toInt())
+    return MTCodepointChar(ch.code)
 }
 
 // LaTeX default
@@ -183,11 +183,11 @@ fun getDefaultStyle(ch: Char): MTCodepointChar {
             return getItalicized(ch)
         }
         isNumber(ch) || isCapitalGreek(ch) -> {
-            return MTCodepointChar(ch.toInt())
+            return MTCodepointChar(ch.code)
         }
         ch == '.' -> {
             // . is treated as a number in our code, but it doesn't change fonts.
-            return MTCodepointChar(ch.toInt())
+            return MTCodepointChar(ch.code)
         }
     }
     throw MathDisplayException("Unknown character $ch for default style.")
@@ -361,7 +361,7 @@ fun styleCharacter(ch: Char, fontStyle: MTFontStyle): MTCodepointChar {
             return getDefaultStyle(ch)
         }
         MTFontStyle.KMTFontStyleRoman -> {
-            return MTCodepointChar(ch.toInt())
+            return MTCodepointChar(ch.code)
         }
         MTFontStyle.KMTFontStyleBold -> {
             return getBold(ch)
