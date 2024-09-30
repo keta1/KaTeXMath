@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
              Comments are placed in TextViews.
              All are placed into a view to scroll vertically and horizontally.
          */
-        val inputStream = getResources().openRawResource(R.raw.samples)
+        val inputStream = getResources().openRawResource(R.raw.samples2)
         val lineList = mutableListOf<String>()
 
         inputStream.bufferedReader().useLines { lines -> lines.forEach { lineList.add(it) } }
@@ -94,7 +94,6 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         return when (item.itemId) {
         // Font menu
             R.id.fontdefault -> {
