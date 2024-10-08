@@ -53,7 +53,7 @@ class MTFontManager {
         }
 
         fun defaultFont(): MTFont {
-            return latinModernFontWithSize(KDefaultFontSize)
+            return xitsFontWithSize(KDefaultFontSize)
         }
     }
 }
