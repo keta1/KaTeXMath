@@ -1,23 +1,19 @@
-傅里叶变换的公式可以表示为：
-
-对于连续信号，傅里叶变换定义为：
-
-\[
 F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-j \omega t} dt
-\]
 
-# 其中：
-F(\omega)
-- \( F(\omega) \) 是信号 \( f(t) \) 的傅里叶变换。
-- \( f(t) \) 是时域信号。
-- \( \omega \) 是角频率，单位为弧度每秒。
-- \( j \) 是虚数单位。
+#  xxx
+i\hbar \frac{\partial}{\partial t} \Psi(\mathbf{r}, t) = \hat{H} \Psi(\mathbf{r}, t)
 
-傅里叶逆变换的公式为：
-
-# \[
-\[
 f(t) = \frac{1}{2\pi} \int_{-\infty}^{\infty} F(\omega) e^{j \omega t} d\omega
-\]
 
-这些公式用于将信号从时域转换到频域，以及从频域转换回时域。
+# 1
+\frac{1}{\left(\sqrt{\phi \sqrt{5}} - \phi\right) e^{\frac{2}{5} \pi}} = 1 + \frac{e^{-2\pi}}{1 + \frac{e^{-4\pi}}{1 + \frac{e^{-6\pi}}{1 + \frac{e^{-8\pi}}{1 + \cdots}}}}
+
+# 2
+\iint_S \mathbf{E} \cdot d\mathbf{A} = \frac{Q_{enc}}{\epsilon_0}
+
+\iiss
+
+# oiint
+\oiint_{\partial\,\Omega}\textbf{D.}\hat{\textbf{n}}\;dS
+
+\int_0^1\int_0^{1-y}(4\sqrt{3}\;xy)\;dx\;dy

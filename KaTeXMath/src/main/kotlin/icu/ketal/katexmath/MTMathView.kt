@@ -66,12 +66,7 @@ class MTMathView @JvmOverloads constructor(
         set(value) {
             field = value
 
-            val list: MTMathList? = MTMathListBuilder.buildFromString(latex, lastError)
-            if (lastError.errorCode != MTParseErrors.ErrorNone) {
-                this._mathList = null
-            } else {
-                this._mathList = list
-            }
+            _mathList = MTMathListBuilder.buildFromString(latex, lastError)
             displayList = null
             requestLayout()
             invalidate()
@@ -106,7 +101,7 @@ class MTMathView @JvmOverloads constructor(
      * See **textAlignment**
      */
     enum class MTTextAlignment {
-        /// Align left.
+        /// Alig                                                                                                                                                                                                                                                                                                                                                                                                                                                                ``n left.
         KMTTextAlignmentLeft,
         /// Align center.
         KMTTextAlignmentCenter,
