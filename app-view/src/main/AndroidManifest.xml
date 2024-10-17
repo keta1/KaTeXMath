@@ -11,7 +11,7 @@
         android:theme="@style/Theme.KaTeXMath">
 
         <activity
-            android:name=".MainActivity"
+            android:name="icu.ketal.katexmath.example.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.KaTeXMath">
             <intent-filter>

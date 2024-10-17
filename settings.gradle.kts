@@ -27,11 +27,10 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "KaTeXMath-root"
-include(":KaTeXMath")
+include(":KaTeXMath-core")
+include(":KaTeXMath-compose")
 
 include(":app")
 include(":app-view")
-
-// todo
 // include(":app-desktop")
 // include(":app-wasm")

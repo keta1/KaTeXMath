@@ -8,7 +8,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "icu.ketal.katexmath.example"
+        applicationId = "icu.ketal.katexmath.example.view"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.kaTeXMath)
+    implementation(projects.kaTeXMathCore)
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
