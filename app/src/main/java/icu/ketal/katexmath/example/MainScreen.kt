@@ -1,5 +1,6 @@
 package icu.ketal.katexmath.example
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -87,7 +88,7 @@ internal fun MainScreen(
         KaTeXMath(
           latex = line,
           style = style,
-          modifier = Modifier.padding(vertical = 16.dp),
+          modifier = Modifier.padding(vertical = 16.dp).border(1.dp, Color.Red),
         )
       }
     }

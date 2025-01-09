@@ -15,7 +15,12 @@ import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.takeOrElse
@@ -33,10 +38,15 @@ import icu.ketal.katexmath.render.MTTypesetter
 import kotlin.math.max
 
 internal class KatexMathNode(
-  private var latex: String,
-  private var style: TextStyle,
-  private var labelMode: MTMathView.MTMathViewMode = KMTMathViewModeDisplay,
-) : Modifier.Node(), LayoutModifierNode, DrawModifierNode, CompositionLocalConsumerModifierNode, ObserverModifierNode {
+  private val latex: String,
+  private val style: TextStyle,
+  labelMode: MTMathView.MTMathViewMode = KMTMathViewModeDisplay,
+) : Modifier.Node(),
+    LayoutModifierNode,
+    DrawModifierNode,
+    CompositionLocalConsumerModifierNode,
+    ObserverModifierNode
+{
   private var displayList: MTMathListDisplay? = null
   private val lastError = MTParseError()
   private var _mathList: MTMathList? = null
@@ -45,6 +55,7 @@ internal class KatexMathNode(
     KMTMathViewModeDisplay -> MTLineStyle.KMTLineStyleDisplay
     KMTMathViewModeText -> MTLineStyle.KMTLineStyleText
   }
+  private var textMeasurer: TextMeasurer? = null
 
   init {
     setLatex()
@@ -59,11 +70,24 @@ internal class KatexMathNode(
     measurable: Measurable,
     constraints: Constraints
   ): MeasureResult {
+    val textMeasurer = textMeasurer
     // defatlt font Size 20.sp
     val fontSize = style.fontSize.takeOrElse { 20.sp }.toPx()
     val font = MTFontManager.defaultFont().copyFontWithSize(fontSize)
     if (_mathList == null) {
-      return layout(0, 0) {}
+      if (textMeasurer == null) {
+        return layout(0, 0) {}
+      } else {
+        val result = textMeasurer.measure(
+          text = latex,
+          style = style,
+          constraints = constraints
+        ).size
+        val placeable = measurable.measure(constraints.copy(maxWidth = result.width, maxHeight = result.height))
+        return layout(result.width, result.height) {
+          placeable.placeRelative(0, 0)
+        }
+      }
     }
     val dl = MTTypesetter.createLineForMathList(_mathList!!, font, currentStyle)
     val height: Float = dl.ascent + dl.descent
@@ -76,7 +100,10 @@ internal class KatexMathNode(
   }
 
   override fun ContentDrawScope.draw() {
-    if (displayError()) return
+    if (displayError()) {
+      textMeasurer?.let { drawRawText(it) }
+      return
+    }
     val fontSize = style.fontSize.takeOrElse { 20.sp }.toPx()
     val font = MTFontManager.defaultFont().copyFontWithSize(fontSize)
     val dl = MTTypesetter.createLineForMathList(_mathList!!, font, currentStyle)
@@ -96,6 +123,18 @@ internal class KatexMathNode(
     }
   }
 
+  private fun ContentDrawScope.drawRawText(textMeasurer: TextMeasurer) {
+    val result = textMeasurer.measure(
+      text = latex,
+      style = style,
+      constraints = Constraints(
+        maxWidth = size.width.toInt(),
+        maxHeight = size.height.toInt()
+      )
+    )
+    drawText(result)
+  }
+
   private fun displayError(): Boolean {
     return lastError.errorCode != MTParseErrors.ErrorNone
   }
@@ -112,6 +151,12 @@ internal class KatexMathNode(
     observeReads {
       val context = currentValueOf(LocalContext)
       MTFontManager.setContext(context)
+
+      val fontFamilyResolver = currentValueOf(LocalFontFamilyResolver)
+      val density = currentValueOf(LocalDensity)
+      val layoutDirection = currentValueOf(LocalLayoutDirection)
+      val defaultCacheSize = 8
+      textMeasurer = TextMeasurer(fontFamilyResolver, density, layoutDirection, defaultCacheSize)
     }
   }
 }
