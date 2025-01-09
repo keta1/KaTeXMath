@@ -35,7 +35,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(projects.kaTeXMathCore)
+    api(projects.kaTeXMathCore)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.ui)

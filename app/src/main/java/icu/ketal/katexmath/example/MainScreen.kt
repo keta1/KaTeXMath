@@ -1,7 +1,8 @@
 package icu.ketal.katexmath.example
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -85,11 +86,13 @@ internal fun MainScreen(
           ),
         )
       } else {
-        KaTeXMath(
-          latex = line,
-          style = style,
-          modifier = Modifier.padding(vertical = 16.dp).border(1.dp, Color.Red),
-        )
+        Box(Modifier.horizontalScroll(rememberScrollState())) {
+          KaTeXMath(
+            latex = line,
+            style = style,
+            modifier = Modifier.padding(vertical = 16.dp),
+          )
+        }
       }
     }
   }

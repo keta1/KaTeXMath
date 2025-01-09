@@ -92,8 +92,7 @@ internal class KatexMathNode(
     val dl = MTTypesetter.createLineForMathList(_mathList!!, font, currentStyle)
     val height: Float = dl.ascent + dl.descent
     val width: Float = dl.width
-    val maxWidth = max(width.toInt(), constraints.maxWidth)
-    val placeable = measurable.measure(constraints.copy(maxWidth = maxWidth, maxHeight = height.toInt()))
+    val placeable = measurable.measure(constraints.copy(maxWidth = width.toInt(), maxHeight = height.toInt()))
     return layout(placeable.width, placeable.height) {
       placeable.placeRelative(0, 0)
     }
