@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "icu.ketal.katexmath"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    ndkVersion = "27.1.12297006"
+    ndkVersion = "27.2.12479018"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -40,7 +40,7 @@ android {
     externalNativeBuild {
         cmake {
             path = File(projectDir, "src/main/cpp/CMakeLists.txt")
-            version = "3.30.3"
+            version = "3.31.1"
         }
     }
 
