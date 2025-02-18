@@ -711,6 +711,7 @@ class MTMathListBuilder(str: String) {
             hashMapOf(
                 3.0f to ",",
                 4.0f to ">",
+                4.0f to ":",
                 5.0f to ";",
                 -3.0f to "!",
                 18.0f to "quad",
