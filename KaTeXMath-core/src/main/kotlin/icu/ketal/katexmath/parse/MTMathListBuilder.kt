@@ -4,17 +4,15 @@
 //
 //  Created by Kostub Deshmukh on 8/28/13.
 //  Copyright (C) 2013 MathChat
-//   
+//
 //  This software may be modified and distributed under the terms of the
 //  MIT license. See the LICENSE file for details.
 //
 package icu.ketal.katexmath.parse
 
-
 // NSString *const MTParseError = "ParseError"
 
 data class MTEnvProperties(var envName: String?, var ended: Boolean = false, var numRows: Long = 0)
-
 
 class MTMathListBuilder(str: String) {
     private var chars: String = str
@@ -414,7 +412,8 @@ class MTMathListBuilder(str: String) {
         }
 
         when (command) {
-            "frac" -> {
+          // todo: Support rendering different styles of frac
+              "frac", "dfrac", "tfrac", "sfrac" -> {
                 // A fraction command has 2 arguments
                 val frac = MTFraction()
                 frac.numerator = this.buildInternal(true)
