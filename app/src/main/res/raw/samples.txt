@@ -3,6 +3,9 @@
 # Empty lines are ignored lines
 # Lines starting with # displayed in TextViews
 #
+
+f(1, 0, 0) \;=\; \frac{1 \cdot e^{-0+0}}{\,1 + e^{\,0\cdot0}\,} \;=\; \frac{1}{1 + 1} \;=\; \tfrac12.
+
 x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}
 
 \color{#ff3399}{(a_1+a_2)^2}=a_1^2+2a_1a_2+a_2^2
