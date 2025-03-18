@@ -33,9 +33,7 @@ import icu.ketal.katexmath.parse.MTMathList
 import icu.ketal.katexmath.parse.MTMathListBuilder
 import icu.ketal.katexmath.parse.MTParseError
 import icu.ketal.katexmath.parse.MTParseErrors
-import icu.ketal.katexmath.render.MTMathListDisplay
 import icu.ketal.katexmath.render.MTTypesetter
-import kotlin.math.max
 
 internal class KatexMathNode(
   private val latex: String,
@@ -47,24 +45,14 @@ internal class KatexMathNode(
     CompositionLocalConsumerModifierNode,
     ObserverModifierNode
 {
-  private var displayList: MTMathListDisplay? = null
   private val lastError = MTParseError()
-  private var _mathList: MTMathList? = null
+  private var _mathList: MTMathList? = MTMathListBuilder.buildFromString(latex, lastError)
 
   private val currentStyle: MTLineStyle = when (labelMode) {
     KMTMathViewModeDisplay -> MTLineStyle.KMTLineStyleDisplay
     KMTMathViewModeText -> MTLineStyle.KMTLineStyleText
   }
   private var textMeasurer: TextMeasurer? = null
-
-  init {
-    setLatex()
-  }
-
-  private fun setLatex() {
-    _mathList = MTMathListBuilder.buildFromString(latex, lastError)
-    displayList = null
-  }
 
   override fun MeasureScope.measure(
     measurable: Measurable,
@@ -89,7 +77,14 @@ internal class KatexMathNode(
         }
       }
     }
-    val dl = MTTypesetter.createLineForMathList(_mathList!!, font, currentStyle)
+    val dl = kotlin.runCatching {
+      MTTypesetter.createLineForMathList(_mathList!!, font, currentStyle)
+    }.getOrNull()
+    if (dl == null) {
+      // mock error
+      lastError.errorCode = MTParseErrors.InvalidCommand
+      return layout(0, 0) {}
+    }
     val height: Float = dl.ascent + dl.descent
     val width: Float = dl.width
     val placeable = measurable.measure(constraints.copy(maxWidth = width.toInt(), maxHeight = height.toInt()))

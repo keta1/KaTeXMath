@@ -897,5 +897,4 @@ class MTMathTextColor : MTMathAtom(MTMathAtomType.KMTMathAtomTextColor, "") {
         newColor.innerList = newColor.innerList?.finalized()
         return newColor
     }
-
 }
