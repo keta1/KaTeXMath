@@ -4,6 +4,8 @@
 # Lines starting with # displayed in TextViews
 #
 
+f(x) = f(x_0) + f'(x_0)(x - x_0) + \frac{f''(\xi)}{2}(x - x_0)^2
+
 f(1, 0, 0) \;=\; \frac{1 \cdot e^{-0+0}}{\,1 + e^{\,0\cdot0}\,} \;=\; \frac{1}{1 + 1} \;=\; \tfrac12.
 
 x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}

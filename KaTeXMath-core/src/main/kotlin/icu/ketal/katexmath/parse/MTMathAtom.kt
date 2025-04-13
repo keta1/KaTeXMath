@@ -330,9 +330,12 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
             if (ch.code < 0x21 || ch.code > 0x7E) {
                 // skip non ascii characters and spaces
                 return null
-            } else if (ch == '$' || ch == '%' || ch == '#' || ch == '&' || ch == '~' || ch == '\'') {
+            } else if (ch == '$' || ch == '%' || ch == '#' || ch == '&' || ch == '~') {
                 // These are latex control characters that have special meanings. We don't support them.
                 return null
+            } else if (ch == '\'') {
+                // Handle prime symbol for derivatives
+                return atomWithType(MTMathAtomType.KMTMathAtomOrdinary, "\u2032")
             } else if (ch == '^' || ch == '_' || ch == '{' || ch == '}' || ch == '\\') {
                 // more special characters for Latex.
                 return null
