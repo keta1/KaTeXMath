@@ -47,6 +47,8 @@ enum class MTMathAtomType {
     KMTMathAtomOverline,
     /// An accented atom - Accent in TeX
     KMTMathAtomAccent,
+    /// A boxed atom - not in original TeX
+    KMTMathAtomBoxed,
 
     // Atoms after this point do not support subscripts or superscripts
 
@@ -248,6 +250,9 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
                 MTMathAtomType.KMTMathAtomAccent -> {
                     return ("Accent")
                 }
+                MTMathAtomType.KMTMathAtomBoxed -> {
+                    return ("Boxed")
+                }
                 MTMathAtomType.KMTMathAtomBoundary -> {
                     return ("Boundary")
                 }
@@ -308,6 +313,10 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
 
                 MTMathAtomType.KMTMathAtomAccent -> {
                     return MTAccent(value)
+                }
+
+                MTMathAtomType.KMTMathAtomBoxed -> {
+                    return MTBoxed()
                 }
 
                 MTMathAtomType.KMTMathAtomSpace -> {
@@ -899,5 +908,35 @@ class MTMathTextColor : MTMathAtom(MTMathAtomType.KMTMathAtomTextColor, "") {
         super.finalized(newColor)
         newColor.innerList = newColor.innerList?.finalized()
         return newColor
+    }
+}
+
+// MTBoxed have no nucleus and are always KMTMathAtomBoxed type
+class MTBoxed : MTMathAtom(MTMathAtomType.KMTMathAtomBoxed, "") {
+    /// The inner math list
+    var innerList: MTMathList? = null
+
+    override fun toLatexString(): String {
+        val il: MTMathList? = this.innerList
+        var istr = ""
+        if (il != null) {
+            istr = MTMathListBuilder.toLatexString(il)
+        }
+
+        return "\\boxed{$istr}"
+    }
+
+    override fun copyDeep(): MTBoxed {
+        val atom = MTBoxed()
+        super.copyDeepContent(atom)
+        atom.innerList = this.innerList?.copyDeep()
+        return atom
+    }
+
+    override fun finalized(): MTBoxed {
+        val newBoxed: MTBoxed = this.copyDeep()
+        super.finalized(newBoxed)
+        newBoxed.innerList = newBoxed.innerList?.finalized()
+        return newBoxed
     }
 }

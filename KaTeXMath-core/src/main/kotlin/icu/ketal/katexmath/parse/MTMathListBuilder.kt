@@ -480,6 +480,13 @@ class MTMathListBuilder(str: String) {
                 return under
             }
 
+            "boxed" -> {
+                // The boxed command has 1 argument
+                val boxed = MTBoxed()
+                boxed.innerList = this.buildInternal(true)
+                return boxed
+            }
+
             "begin" -> {
                 val env = this.readEnvironment() ?: return null
                 return buildTable(env, null, false)

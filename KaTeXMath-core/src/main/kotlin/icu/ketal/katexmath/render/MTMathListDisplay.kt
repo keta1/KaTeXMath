@@ -722,3 +722,30 @@ class MTAccentDisplay(val accent: MTGlyphDisplay, val accentee: MTMathListDispla
         canvas.restore()
     }
 }
+
+// MTBoxedDisplay - display boxed content
+class MTBoxedDisplay(val inner: MTMathListDisplay, range: NSRange) :
+    MTDisplay(range = range) {
+
+    init {
+        this.width = inner.width
+        this.ascent = inner.ascent
+        this.descent = inner.descent
+    }
+
+    override fun colorChanged() {
+        this.inner.textColor = this.textColor
+    }
+
+    override fun draw(canvas: Canvas) {
+        this.inner.draw(canvas)
+    }
+
+    override fun positionChanged() {
+        this.updateInnerPosition()
+    }
+
+    private fun updateInnerPosition() {
+        this.inner.position = CGPoint(this.position.x, this.position.y)
+    }
+}

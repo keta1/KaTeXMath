@@ -5,6 +5,7 @@ import icu.ketal.katexmath.parse.MTMathAtomType.*
 import icu.ketal.katexmath.parse.MTLineStyle.*
 import icu.ketal.katexmath.parse.MTColumnAlignment.*
 import icu.ketal.katexmath.parse.MTAccent
+  import icu.ketal.katexmath.parse.MTBoxed
 import icu.ketal.katexmath.parse.MTFraction
 import icu.ketal.katexmath.parse.MTInner
 import icu.ketal.katexmath.parse.MTLargeOperator
@@ -318,44 +319,54 @@ class MTTypesetter(
           }
         }
 
-        KMTMathAtomUnderline -> {
+        KMTMathAtomOverline, KMTMathAtomUnderline -> {
           // stash the existing layout
           if (currentLine.isNotEmpty()) {
             this.addDisplayLine()
           }
-          // Underline is considered as Ord in rule 16.
           this.addInterElementSpace(prevNode, KMTMathAtomOrdinary)
-          atom.type = KMTMathAtomOrdinary
-
-          val under = atom as MTUnderLine
-          val displayUnder = this.makeUnderline(under)
-          if (displayUnder != null) {
-            displayAtoms.add(displayUnder)
-            currentPosition.x += displayUnder.width
+          var displayAtom: MTDisplay? = null
+          when (atom.type) {
+            KMTMathAtomOverline -> {
+              val over = atom as MTOverLine
+              displayAtom = this.makeOverline(over)
+            }
+            KMTMathAtomUnderline -> {
+              val under = atom as MTUnderLine
+              displayAtom = this.makeUnderline(under)
+            }
+            else -> {}
+          }
+          if (displayAtom != null) {
+            displayAtoms.add(displayAtom)
+            currentPosition.x += displayAtom.width
             // add super scripts || subscripts
             if (atom.subScript != null || atom.superScript != null) {
-              this.makeScripts(atom, displayUnder, under.indexRange.location, 0f)
+              this.makeScripts(
+                atom, displayAtom, atom.indexRange.location, 0f
+              )
             }
           }
         }
 
-        KMTMathAtomOverline -> {
+        KMTMathAtomBoxed -> {
           // stash the existing layout
           if (currentLine.isNotEmpty()) {
             this.addDisplayLine()
           }
-          // Overline is considered as Ord in rule 16.
+          // Boxed is considered as Ord in rule 16, like overline and underline
           this.addInterElementSpace(prevNode, KMTMathAtomOrdinary)
-          atom.type = KMTMathAtomOrdinary
 
-          val over = atom as MTOverLine
-          val displayOver = this.makeOverline(over)
-          if (displayOver != null) {
-            displayAtoms.add(displayOver)
-            currentPosition.x += displayOver.width
+          val boxed = atom as MTBoxed
+          val displayBoxed = this.makeBoxed(boxed)
+          if (displayBoxed != null) {
+            displayAtoms.add(displayBoxed)
+            currentPosition.x += displayBoxed.width
             // add super scripts || subscripts
             if (atom.subScript != null || atom.superScript != null) {
-              this.makeScripts(atom, displayOver, over.indexRange.location, 0f)
+              this.makeScripts(
+                atom, displayBoxed, atom.indexRange.location, 0f
+              )
             }
           }
         }
@@ -1225,6 +1236,19 @@ class MTTypesetter(
       overDisplay.width = innerListDisplay.width
       overDisplay.position = currentPosition
       return overDisplay
+    }
+    return null
+  }
+
+  // Boxed
+  private fun makeBoxed(boxed: MTBoxed): MTDisplay? {
+    if (boxed.innerList != null) {
+      val innerListDisplay = createLineForMathList(boxed.innerList!!, font, style, cramped)
+      val boxedDisplay = MTBoxedDisplay(innerListDisplay, boxed.indexRange)
+      
+      // 设置位置
+      boxedDisplay.position = currentPosition
+      return boxedDisplay
     }
     return null
   }
