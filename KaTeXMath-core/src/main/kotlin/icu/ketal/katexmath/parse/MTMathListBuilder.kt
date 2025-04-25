@@ -330,6 +330,13 @@ class MTMathListBuilder(str: String) {
             // Single char commands
             if (singleCharCommands.contains(ch)) {
                 return ch.toString()
+            } else if (ch == '\n' || ch == '\r') {
+                // Handle LaTeX behavior where a backslash followed by a newline creates a space
+                // If there are other newline characters following, skip them too
+                if (ch == '\r' && hasCharacters() && getNextCharacter() != '\n') {
+                    unlookCharacter()
+                }
+                return " "
             } else {
                 // not a known single character command
                 unlookCharacter()
