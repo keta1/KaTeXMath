@@ -265,10 +265,6 @@ open class MTMathAtomFactory {
             table.setAlignment(MTColumnAlignment.KMTColumnAlignmentLeft, 2)
             return table
         } else if (env == "cases") {
-            if (table.numColumns() != 2) {
-                error.copyFrom(MTParseError(MTParseErrors.InvalidNumColumns, "cases environment can only have 2 columns"))
-                return null
-            }
             table.interRowAdditionalSpacing = 0f
             table.interColumnSpacing = 18.0f
             table.setAlignment(MTColumnAlignment.KMTColumnAlignmentLeft, 0)
