@@ -22,6 +22,7 @@ import icu.ketal.katexmath.parse.atom.MTMathTextColor
 import icu.ketal.katexmath.parse.atom.MTOverLine
 import icu.ketal.katexmath.parse.atom.MTRadical
 import icu.ketal.katexmath.parse.atom.MTUnderLine
+import icu.ketal.katexmath.render.packageWarning
 
 // NSString *const MTParseError = "ParseError"
 
@@ -355,6 +356,14 @@ class MTMathListBuilder(str: String) {
     return readString()
   }
 
+  /**
+   * Reads and returns the next delimiter from the input stream. Delimiters can be a single character
+   * or a command that starts with a backslash. Processes spaces and non-ASCII characters appropriately.
+   * Commands like "|" and "||" are treated as delimiters.
+   *
+   * @return the delimiter as a string if successfully read, or `null` if no more characters are available.
+   * @throws MathDisplayException if an unexpected non-space character is encountered.
+   */
   private fun readDelimiter(): String? {
     // Ignore spaces and nonascii.
     skipSpaces()
@@ -476,6 +485,50 @@ class MTMathListBuilder(str: String) {
 
       "boxed" -> MTBoxed().apply {
         innerList = buildInternal(true)
+      }
+
+      "genfrac" -> {
+        MTFraction().apply {
+          val leftDelim = if (expectCharacter('{')) {
+            val delim = readDelimiter() ?: ""
+            if (!expectCharacter('}')) {
+              setError(MTParseErrors.CharacterNotFound, "Missing }")
+              return null
+            }
+            delim
+          } else ""
+
+          val rightDelim = if (expectCharacter('{')) {
+            val delim = readDelimiter() ?: ""
+            if (!expectCharacter('}')) {
+              setError(MTParseErrors.CharacterNotFound, "Missing }")
+              return null
+            }
+            delim
+          } else ""
+
+          leftDelimiter = leftDelim
+          rightDelimiter = rightDelim
+
+          val thickness = buildInternal(true)?.toString()
+          // Set the thickness of the score line and whether to display the score line
+          thickness?.let {
+            ruleThickness = thickness
+            // If the thickness is "0pt", the fractional line is not displayed
+            hasRule = thickness != "0pt"
+          }
+
+          mathStyle = when (buildInternal(true)?.toString()) {
+            "0", "displaystyle" -> MTLineStyle.KMTLineStyleDisplay
+            "1", "textstyle" -> MTLineStyle.KMTLineStyleText
+            "2", "scriptstyle" -> MTLineStyle.KMTLineStyleScript
+            "3", "scriptscriptstyle" -> MTLineStyle.KMTLineStyleScriptScript
+            else -> null
+          }
+
+          numerator = buildInternal(true)
+          denominator = buildInternal(true)
+        }
       }
 
       "begin" -> {

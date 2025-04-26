@@ -736,7 +736,7 @@ class MTTypesetter(
 
   private fun makeFraction(frac: MTFraction): MTDisplay {
     // lay out the parts of the fraction
-    val fractionStyle = this.fractionStyle()
+    val fractionStyle = frac.mathStyle ?: this.fractionStyle()
     val numeratorDisplay =
       createLineForMathList(frac.numerator!!, this.font, fractionStyle, false)
     val denominatorDisplay =
@@ -746,8 +746,25 @@ class MTTypesetter(
     var numeratorShiftUp: Float = numeratorShiftUp(frac.hasRule)
     var denominatorShiftDown: Float = denominatorShiftDown(frac.hasRule)
     val barLocation: Float = styleFont.mathTable.axisHeight
-    val barThickness: Float =
-      if (frac.hasRule) styleFont.mathTable.fractionRuleThickness else 0f
+
+    val barThickness: Float = when {
+      !frac.hasRule -> 0f
+      frac.ruleThickness != null -> {
+        val thickness = frac.ruleThickness ?: ""
+        try {
+          // only PT units are supported, and more units can be expanded in the future
+          if (thickness.endsWith("pt")) {
+            val value = thickness.substring(0, thickness.length - 2).toFloat()
+            value
+          } else {
+            styleFont.mathTable.fractionRuleThickness
+          }
+        } catch (e: Exception) {
+          styleFont.mathTable.fractionRuleThickness
+        }
+      }
+      else -> styleFont.mathTable.fractionRuleThickness
+    }
 
     if (frac.hasRule) {
       // This is the difference between the lowest edge of the numerator and the top edge of the fraction bar

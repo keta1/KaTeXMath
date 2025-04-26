@@ -1,5 +1,6 @@
 package icu.ketal.katexmath.parse.atom
 
+import icu.ketal.katexmath.parse.MTLineStyle
 import icu.ketal.katexmath.parse.MTMathAtom
 import icu.ketal.katexmath.parse.MTMathAtomType
 import icu.ketal.katexmath.parse.MTMathList
@@ -23,6 +24,21 @@ class MTFraction() : MTMathAtom(MTMathAtomType.KMTMathAtomFraction, "") {
 
   /** An optional delimiter for a fraction on the right. */
   var rightDelimiter: String? = null
+
+  /**
+   * The thickness of the fraction rule.
+   * Special values:
+   * null - use the default thickness
+   * "0pt" - no rule
+   * Any other value - use specified thickness
+   */
+  var ruleThickness: String? = null
+
+  /**
+   * The math style to be used for the fraction.
+   * null - use the default style based on the context
+   */
+  var mathStyle: MTLineStyle? = null
 
   // fractions have no nucleus
   constructor(rule: Boolean) : this() {
@@ -52,6 +68,8 @@ class MTFraction() : MTMathAtom(MTMathAtomType.KMTMathAtomFraction, "") {
     atom.denominator = this.denominator?.copyDeep()
     atom.leftDelimiter = this.leftDelimiter
     atom.rightDelimiter = this.rightDelimiter
+    atom.ruleThickness = this.ruleThickness
+    atom.mathStyle = this.mathStyle
     return atom
   }
 

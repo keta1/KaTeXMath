@@ -37,7 +37,7 @@ class MTMathList {
     atoms.addAll(list.atoms)
   }
 
-  override fun toString(): String = atoms.joinToString(separator = "") { it.toString() }
+  override fun toString(): String = atoms.joinToString(separator = "") { it.toLatexString() }
 
   fun description(): String = toString()
 
