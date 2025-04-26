@@ -11,113 +11,122 @@ The type of the atom determines how it is rendered, and spacing between the atom
  */
 
 enum class MTMathAtomType {
-    // A non-atom
-    KMTMathAtomNone,
-    /// A number or text in ordinary format - Ord in TeX
-    KMTMathAtomOrdinary,
-    /// A number - Does not exist in TeX
-    KMTMathAtomNumber,
-    /// A variable (i.e. text in italic format) - Does not exist in TeX
-    KMTMathAtomVariable,
-    /// A large operator such as (sin/cos, integral etc.) - Op in TeX
-    KMTMathAtomLargeOperator,
-    /// A binary operator - Bin in TeX
-    KMTMathAtomBinaryOperator,
-    /// A unary operator - Does not exist in TeX.
-    KMTMathAtomUnaryOperator,
-    /// A relation, e.g. = > < etc. - Rel in TeX
-    KMTMathAtomRelation,
-    /// Open brackets - Open in TeX
-    KMTMathAtomOpen,
-    /// Close brackets - Close in TeX
-    KMTMathAtomClose,
-    /// An fraction e.g 1/2 - generalized fraction noad in TeX
-    KMTMathAtomFraction,
-    /// A radical operator e.g. sqrt(2)
-    KMTMathAtomRadical,
-    /// Punctuation such as , - Punct in TeX
-    KMTMathAtomPunctuation,
-    /// A placeholder square for future input. Does not exist in TeX
-    KMTMathAtomPlaceholder,
-    /// An inner atom, i.e. an embedded math list - Inner in TeX
-    KMTMathAtomInner,
-    /// An underlined atom - Under in TeX
-    KMTMathAtomUnderline,
-    /// An overlined atom - Over in TeX
-    KMTMathAtomOverline,
-    /// An accented atom - Accent in TeX
-    KMTMathAtomAccent,
-    /// A boxed atom - not in original TeX
-    KMTMathAtomBoxed,
+  // A non-atom
+  KMTMathAtomNone,
+  /// A number or text in ordinary format - Ord in TeX
+  KMTMathAtomOrdinary,
+  /// A number - Does not exist in TeX
+  KMTMathAtomNumber,
+  /// A variable (i.e. text in italic format) - Does not exist in TeX
+  KMTMathAtomVariable,
+  /// A large operator such as (sin/cos, integral etc.) - Op in TeX
+  KMTMathAtomLargeOperator,
+  /// A binary operator - Bin in TeX
+  KMTMathAtomBinaryOperator,
+  /// A unary operator - Does not exist in TeX.
+  KMTMathAtomUnaryOperator,
+  /// A relation, e.g. = > < etc. - Rel in TeX
+  KMTMathAtomRelation,
+  /// Open brackets - Open in TeX
+  KMTMathAtomOpen,
+  /// Close brackets - Close in TeX
+  KMTMathAtomClose,
+  /// An fraction e.g 1/2 - generalized fraction noad in TeX
+  KMTMathAtomFraction,
+  /// A radical operator e.g. sqrt(2)
+  KMTMathAtomRadical,
+  /// Punctuation such as , - Punct in TeX
+  KMTMathAtomPunctuation,
+  /// A placeholder square for future input. Does not exist in TeX
+  KMTMathAtomPlaceholder,
+  /// An inner atom, i.e. an embedded math list - Inner in TeX
+  KMTMathAtomInner,
+  /// An underlined atom - Under in TeX
+  KMTMathAtomUnderline,
+  /// An overlined atom - Over in TeX
+  KMTMathAtomOverline,
+  /// An accented atom - Accent in TeX
+  KMTMathAtomAccent,
+  /// A boxed atom - not in original TeX
+  KMTMathAtomBoxed,
 
-    // Atoms after this point do not support subscripts or superscripts
+  // Atoms after this point do not support subscripts or superscripts
 
-    /// A left atom - Left & Right in TeX. We don't need two since we track boundaries separately.
-    KMTMathAtomBoundary,
+  /// A left atom - Left & Right in TeX. We don't need two since we track boundaries separately.
+  KMTMathAtomBoundary,
 
-    // Atoms after this are non-math TeX nodes that are still useful in math mode. They do not have
-    // the usual structure.
+  // Atoms after this are non-math TeX nodes that are still useful in math mode. They do not have
+  // the usual structure.
 
-    /// Spacing between math atoms. This denotes both glue and kern for TeX. We do not
-    /// distinguish between glue and kern.
-    KMTMathAtomSpace,
-    /// Denotes style changes during rendering.
-    KMTMathAtomStyle,
-    KMTMathAtomColor,
-    KMTMathAtomTextColor,
+  /// Spacing between math atoms. This denotes both glue and kern for TeX. We do not
+  /// distinguish between glue and kern.
+  KMTMathAtomSpace,
+  /// Denotes style changes during rendering.
+  KMTMathAtomStyle,
+  KMTMathAtomColor,
+  KMTMathAtomTextColor,
 
-    // Atoms after this point are not part of TeX and do not have the usual structure.
+  // Atoms after this point are not part of TeX and do not have the usual structure.
 
-    /// An table atom. This atom does not exist in TeX. It is equivalent to the TeX command
-    /// halign which is handled outside of the TeX math rendering engine. We bring it into our
-    /// math typesetting to handle matrices and other tables.
-    KMTMathAtomTable
+  /// An table atom. This atom does not exist in TeX. It is equivalent to the TeX command
+  /// halign which is handled outside of the TeX math rendering engine. We bring it into our
+  /// math typesetting to handle matrices and other tables.
+  KMTMathAtomTable
 }
 
 const val NSNotFound: Int = -1
 
 data class NSRange(var location: Int = NSNotFound, var length: Int = 0) {
-    // Return true if equal to passed range
-    fun equal(cmp: NSRange): Boolean {
-        return (cmp.location == this.location && cmp.length == this.length)
-    }
+  // Return true if equal to passed range
+  fun equal(cmp: NSRange): Boolean {
+    return (cmp.location == this.location && cmp.length == this.length)
+  }
 
-    val maxrange
-        get() = location + length
+  val maxrange
+    get() = location + length
 
-    fun union(a: NSRange): NSRange {
-        val b = this
-        val e = maxOf(a.maxrange, b.maxrange)
-        val s = minOf(a.location, b.location)
-        return NSRange(s, e - s)
-    }
+  fun union(a: NSRange): NSRange {
+    val b = this
+    val e = maxOf(a.maxrange, b.maxrange)
+    val s = minOf(a.location, b.location)
+    return NSRange(s, e - s)
+  }
 }
 
 enum class MTFontStyle {
-    /// The default latex rendering style. i.e. variables are italic and numbers are roman.
-    KMTFontStyleDefault,
-    /// Roman font style i.e. \mathrm
-    KMTFontStyleRoman,
-    /// Bold font style i.e. \mathbf
-    KMTFontStyleBold,
-    /// Caligraphic font style i.e. \mathcal
-    KMTFontStyleCaligraphic,
-    /// Typewriter (monospace) style i.e. \mathtt
-    KMTFontStyleTypewriter,
-    /// Italic style i.e. \mathit
-    KMTFontStyleItalic,
-    /// San-serif font i.e. \mathss
-    KMTFontStyleSansSerif,
-    /// Fractur font i.e \mathfrak
-    KMTFontStyleFraktur,
-    /// Blackboard font i.e. \mathbb
-    KMTFontStyleBlackboard,
-    /// Bold italic
-    KMTFontStyleBoldItalic,
+  /// The default latex rendering style. i.e. variables are italic and numbers are roman.
+  KMTFontStyleDefault,
+
+  /// Roman font style i.e. \mathrm
+  KMTFontStyleRoman,
+
+  /// Bold font style i.e. \mathbf
+  KMTFontStyleBold,
+
+  /// Caligraphic font style i.e. \mathcal
+  KMTFontStyleCaligraphic,
+
+  /// Typewriter (monospace) style i.e. \mathtt
+  KMTFontStyleTypewriter,
+
+  /// Italic style i.e. \mathit
+  KMTFontStyleItalic,
+
+  /// San-serif font i.e. \mathss
+  KMTFontStyleSansSerif,
+
+  /// Fractur font i.e \mathfrak
+  KMTFontStyleFraktur,
+
+  /// Blackboard font i.e. \mathbb
+  KMTFontStyleBlackboard,
+
+  /// Bold italic
+  KMTFontStyleBoldItalic,
 }
 
 /** A `MTMathAtom` is the basic unit of a math list. Each atom represents a single character
-or mathematical operator in a list. However certain atoms can represent more complex structures
+or mathematical operator in a list. However, certain atoms can represent more complex structures
 such as fractions and radicals. Each atom has a type which determines how the atom is rendered and
 a nucleus. The nucleus contains the character(s) that need to be rendered. However the nucleus may
 be empty for certain types of atoms. An atom has an optional subscript or superscript which represents
@@ -136,676 +145,552 @@ constructor
  */
 
 open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
+  /** Returns a string representation of the MTMathAtom */
+  /** The nucleus of the atom. */
 
-    /** Returns a string representation of the MTMathAtom */
-    /** The nucleus of the atom. */
-
-    /** An optional superscript. */
-    var superScript: MTMathList? = null
-        set(value) {
-            if (!this.scriptsAllowed()) {
-                throw MathDisplayException("Superscripts not allowed for atom $this")
-            }
-            field = value
-        }
-
-    /** An optional subscript. */
-    var subScript: MTMathList? = null
-        set(value) {
-            if (!this.scriptsAllowed()) {
-                throw MathDisplayException("Subscripts not allowed for atom $this")
-            }
-            field = value
-        }
-
-
-    /** The font style to be used for the atom. */
-    var fontStyle: MTFontStyle = MTFontStyle.KMTFontStyleDefault
-
-    /// If this atom was formed by fusion of multiple atoms, then this stores the list of atoms that were fused to create this one.
-    /// This is used in the finalizing and preprocessing steps.
-    var fusedAtoms = mutableListOf<MTMathAtom>()
-
-    /// The index range in the MTMathList this MTMathAtom tracks. This is used by the finalizing and preprocessing steps
-    /// which fuse MTMathAtoms to track the position of the current MTMathAtom in the original list.
-    // This will be the zero Range until finalize is called on the MTMathList
-    var indexRange: NSRange = NSRange(0, 0)
-
-    private fun dumpstr(s: String) {
-        val ca = s.toCharArray()
-        val cp = Character.codePointAt(ca, 0)
-        println("str $s codepoint $cp")
-        for (c in ca) {
-            println("c $c")
-        }
+  /** An optional superscript. */
+  var superScript: MTMathList? = null
+    set(value) {
+      if (!this.scriptsAllowed()) {
+        throw MathDisplayException("Superscripts not allowed for atom $this")
+      }
+      field = value
     }
 
-    companion object Factory : MTMathAtomFactory() {
-
-        // Returns true if the current binary operator is not really binary.
-        fun isNotBinaryOperator(prevNode: MTMathAtom?): Boolean {
-            if (prevNode == null) {
-                return true
-            }
-
-            if (prevNode.type == MTMathAtomType.KMTMathAtomBinaryOperator || prevNode.type == MTMathAtomType.KMTMathAtomRelation || prevNode.type == MTMathAtomType.KMTMathAtomOpen || prevNode.type == MTMathAtomType.KMTMathAtomPunctuation || prevNode.type == MTMathAtomType.KMTMathAtomLargeOperator) {
-                return true
-            }
-            return false
-        }
-
-        fun typeToText(type: MTMathAtomType): String {
-            when (type) {
-                MTMathAtomType.KMTMathAtomNone -> {
-                    return ("None")
-                }
-                MTMathAtomType.KMTMathAtomOrdinary -> {
-                    return ("Ordinary")
-                }
-                MTMathAtomType.KMTMathAtomNumber -> {
-                    return ("Number")
-                }
-                MTMathAtomType.KMTMathAtomVariable -> {
-                    return ("Variable")
-                }
-                MTMathAtomType.KMTMathAtomBinaryOperator -> {
-                    return ("Binary Operator")
-                }
-                MTMathAtomType.KMTMathAtomUnaryOperator -> {
-                    return ("Unary Operator")
-                }
-                MTMathAtomType.KMTMathAtomRelation -> {
-                    return ("Relation")
-                }
-                MTMathAtomType.KMTMathAtomOpen -> {
-                    return ("Open")
-                }
-                MTMathAtomType.KMTMathAtomClose -> {
-                    return ("Close")
-                }
-                MTMathAtomType.KMTMathAtomFraction -> {
-                    return ("Fraction")
-                }
-                MTMathAtomType.KMTMathAtomRadical -> {
-                    return ("Radical")
-                }
-                MTMathAtomType.KMTMathAtomPunctuation -> {
-                    return ("Punctuation")
-                }
-                MTMathAtomType.KMTMathAtomPlaceholder -> {
-                    return ("Placeholder")
-                }
-                MTMathAtomType.KMTMathAtomLargeOperator -> {
-                    return ("Large Operator")
-                }
-                MTMathAtomType.KMTMathAtomInner -> {
-                    return ("Inner")
-                }
-                MTMathAtomType.KMTMathAtomUnderline -> {
-                    return ("Underline")
-                }
-                MTMathAtomType.KMTMathAtomOverline -> {
-                    return ("Overline")
-                }
-                MTMathAtomType.KMTMathAtomAccent -> {
-                    return ("Accent")
-                }
-                MTMathAtomType.KMTMathAtomBoxed -> {
-                    return ("Boxed")
-                }
-                MTMathAtomType.KMTMathAtomBoundary -> {
-                    return ("Boundary")
-                }
-                MTMathAtomType.KMTMathAtomSpace -> {
-                    return ("Space")
-                }
-                MTMathAtomType.KMTMathAtomStyle -> {
-                    return ("Style")
-                }
-                MTMathAtomType.KMTMathAtomColor -> {
-                    return ("Color")
-                }
-                MTMathAtomType.KMTMathAtomTextColor -> {
-                    return ("TextColor")
-                }
-                MTMathAtomType.KMTMathAtomTable -> {
-                    return ("Table")
-                }
-            }
-        }
-
-
-        /*
-          Some types have special classes instead of MTMathAtom. Based on the type create the correct class
-         */
-        fun atomWithType(type: MTMathAtomType, value: String): MTMathAtom {
-            when (type) {
-            // Default setting of rule is true
-                MTMathAtomType.KMTMathAtomFraction -> {
-                    return MTFraction(true)
-                }
-
-                MTMathAtomType.KMTMathAtomPlaceholder -> {
-                    // A placeholder is created with a white square.
-                    return MTMathAtom(MTMathAtomType.KMTMathAtomPlaceholder, "\u25A1")
-                }
-
-                MTMathAtomType.KMTMathAtomRadical -> {
-                    return MTRadical()
-                }
-
-            // Default setting of limits is true
-                MTMathAtomType.KMTMathAtomLargeOperator -> {
-                    return MTLargeOperator(value, true)
-                }
-
-                MTMathAtomType.KMTMathAtomInner -> {
-                    return MTInner()
-                }
-
-                MTMathAtomType.KMTMathAtomOverline -> {
-                    return MTOverLine()
-                }
-
-                MTMathAtomType.KMTMathAtomUnderline -> {
-                    return MTUnderLine()
-                }
-
-                MTMathAtomType.KMTMathAtomAccent -> {
-                    return MTAccent(value)
-                }
-
-                MTMathAtomType.KMTMathAtomBoxed -> {
-                    return MTBoxed()
-                }
-
-                MTMathAtomType.KMTMathAtomSpace -> {
-                    return MTMathSpace(0f)
-                }
-
-                MTMathAtomType.KMTMathAtomColor -> {
-                    return MTMathColor()
-                }
-                else -> {
-                    return MTMathAtom(type, value)
-                }
-            }
-        }
-
-        fun atomForCharacter(ch: Char): MTMathAtom? {
-            val chStr = ch.toString()
-
-
-            if (ch.code < 0x21 || ch.code > 0x7E) {
-                // skip non ascii characters and spaces
-                return null
-            } else if (ch == '$' || ch == '%' || ch == '#' || ch == '&' || ch == '~') {
-                // These are latex control characters that have special meanings. We don't support them.
-                return null
-            } else if (ch == '\'') {
-                // Handle prime symbol for derivatives
-                return atomWithType(MTMathAtomType.KMTMathAtomOrdinary, "\u2032")
-            } else if (ch == '^' || ch == '_' || ch == '{' || ch == '}' || ch == '\\') {
-                // more special characters for Latex.
-                return null
-            } else if (ch == '(' || ch == '[') {
-                return atomWithType(MTMathAtomType.KMTMathAtomOpen, chStr)
-            } else if (ch == ')' || ch == ']' || ch == '!' || ch == '?') {
-                return atomWithType(MTMathAtomType.KMTMathAtomClose, chStr)
-            } else if (ch == ',' || ch == ';') {
-                return atomWithType(MTMathAtomType.KMTMathAtomPunctuation, chStr)
-            } else if (ch == '=' || ch == '>' || ch == '<') {
-                return atomWithType(MTMathAtomType.KMTMathAtomRelation, chStr)
-            } else if (ch == ':') {
-                // Math colon is ratio. Regular colon is \colon
-                return atomWithType(MTMathAtomType.KMTMathAtomRelation, "\u2236")
-            } else if (ch == '-') {
-                // Use the math minus sign
-                return atomWithType(MTMathAtomType.KMTMathAtomBinaryOperator, "\u2212")
-            } else if (ch == '+' || ch == '*') {
-                return atomWithType(MTMathAtomType.KMTMathAtomBinaryOperator, chStr)
-            } else if (ch == '.' || (ch in '0'..'9')) {
-                return atomWithType(MTMathAtomType.KMTMathAtomNumber, chStr)
-            } else if ((ch in 'a'..'z') || (ch in 'A'..'Z')) {
-                return atomWithType(MTMathAtomType.KMTMathAtomVariable, chStr)
-            } else if (ch == '"' || ch == '/' || ch == '@' || ch == '`' || ch == '|') {
-                // just an ordinary character. The following are allowed ordinary chars
-                // | / ` @ "
-                return atomWithType(MTMathAtomType.KMTMathAtomOrdinary, chStr)
-            } else {
-                throw MathDisplayException("Unknown ascii character $ch. Should have been accounted for.")
-            }
-        }
-
-
+  /** An optional subscript. */
+  var subScript: MTMathList? = null
+    set(value) {
+      if (!this.scriptsAllowed()) {
+        throw MathDisplayException("Subscripts not allowed for atom $this")
+      }
+      field = value
     }
 
 
-    open fun toLatexString(): String {
-        var str = nucleus
+  /** The font style to be used for the atom. */
+  var fontStyle: MTFontStyle = MTFontStyle.KMTFontStyleDefault
 
-        str = toStringSubs(str)
-        return str
+  /// If this atom was formed by fusion of multiple atoms, then this stores the list of atoms that were fused to create this one.
+  /// This is used in the finalizing and preprocessing steps.
+  var fusedAtoms = mutableListOf<MTMathAtom>()
+
+  /// The index range in the MTMathList this MTMathAtom tracks. This is used by the finalizing and preprocessing steps
+  /// which fuse MTMathAtoms to track the position of the current MTMathAtom in the original list.
+  // This will be the zero Range until finalize is called on the MTMathList
+  var indexRange: NSRange = NSRange(0, 0)
+
+  internal fun dumpstr(s: String) {
+    val ca = s.toCharArray()
+    val cp = Character.codePointAt(ca, 0)
+    println("str $s codepoint $cp")
+    for (c in ca) {
+      println("c $c")
+    }
+  }
+
+  companion object Factory : MTMathAtomFactory() {
+    // Returns true if the current binary operator is not really binary.
+    fun isNotBinaryOperator(prevNode: MTMathAtom?): Boolean = when (prevNode?.type) {
+      null -> true
+      MTMathAtomType.KMTMathAtomBinaryOperator,
+      MTMathAtomType.KMTMathAtomRelation,
+      MTMathAtomType.KMTMathAtomOpen,
+      MTMathAtomType.KMTMathAtomPunctuation,
+      MTMathAtomType.KMTMathAtomLargeOperator -> true
+      else -> false
     }
 
-    fun toStringSubs(s: String): String {
-        var str = s
-        val superscript: MTMathList? = this.superScript
-        if (superscript != null) {
-            str += "^{" + MTMathListBuilder.toLatexString(superscript) + "}"
+    fun typeToText(type: MTMathAtomType) = when (type) {
+      MTMathAtomType.KMTMathAtomNone -> "None"
+      MTMathAtomType.KMTMathAtomOrdinary -> "Ordinary"
+      MTMathAtomType.KMTMathAtomNumber -> "Number"
+      MTMathAtomType.KMTMathAtomVariable -> "Variable"
+      MTMathAtomType.KMTMathAtomBinaryOperator -> "Binary Operator"
+      MTMathAtomType.KMTMathAtomUnaryOperator -> "Unary Operator"
+      MTMathAtomType.KMTMathAtomRelation -> "Relation"
+      MTMathAtomType.KMTMathAtomOpen -> "Open"
+      MTMathAtomType.KMTMathAtomClose -> "Close"
+      MTMathAtomType.KMTMathAtomFraction -> "Fraction"
+      MTMathAtomType.KMTMathAtomRadical -> "Radical"
+      MTMathAtomType.KMTMathAtomPunctuation -> "Punctuation"
+      MTMathAtomType.KMTMathAtomPlaceholder -> "Placeholder"
+      MTMathAtomType.KMTMathAtomLargeOperator -> "Large Operator"
+      MTMathAtomType.KMTMathAtomInner -> "Inner"
+      MTMathAtomType.KMTMathAtomUnderline -> "Underline"
+      MTMathAtomType.KMTMathAtomOverline -> "Overline"
+      MTMathAtomType.KMTMathAtomAccent -> "Accent"
+      MTMathAtomType.KMTMathAtomBoxed -> "Boxed"
+      MTMathAtomType.KMTMathAtomBoundary -> "Boundary"
+      MTMathAtomType.KMTMathAtomSpace -> "Space"
+      MTMathAtomType.KMTMathAtomStyle -> "Style"
+      MTMathAtomType.KMTMathAtomColor -> "Color"
+      MTMathAtomType.KMTMathAtomTextColor -> "TextColor"
+      MTMathAtomType.KMTMathAtomTable -> "Table"
+    }
+
+    /*
+      Some types have special classes instead of MTMathAtom. Based on the type create the correct class
+     */
+    fun atomWithType(type: MTMathAtomType, value: String): MTMathAtom = when (type) {
+      // Default setting of rule is true
+      MTMathAtomType.KMTMathAtomFraction -> MTFraction(true)
+      // A placeholder is created with a white square.
+      MTMathAtomType.KMTMathAtomPlaceholder -> MTMathAtom(type, "\u25A1")
+      MTMathAtomType.KMTMathAtomRadical -> MTRadical()
+      // Default setting of limits is true
+      MTMathAtomType.KMTMathAtomLargeOperator -> MTLargeOperator(value, true)
+      MTMathAtomType.KMTMathAtomInner -> MTInner()
+      MTMathAtomType.KMTMathAtomOverline -> MTOverLine()
+      MTMathAtomType.KMTMathAtomUnderline -> MTUnderLine()
+      MTMathAtomType.KMTMathAtomAccent -> MTAccent(value)
+      MTMathAtomType.KMTMathAtomBoxed -> MTBoxed()
+      MTMathAtomType.KMTMathAtomSpace -> MTMathSpace(0f)
+      MTMathAtomType.KMTMathAtomColor -> MTMathColor()
+      else -> MTMathAtom(type, value)
+    }
+
+    fun atomForCharacter(ch: Char): MTMathAtom? {
+      val chStr = ch.toString()
+
+      return when {
+        // skip non-ascii characters and spaces
+        ch.code < 0x21 || ch.code > 0x7E -> null
+
+        // These are latex control characters that have special meanings. We don't support them.
+        ch in setOf('$', '%', '#', '&', '~') -> null
+
+        // Handle prime symbol for derivatives
+        ch == '\'' -> atomWithType(MTMathAtomType.KMTMathAtomOrdinary, "\u2032")
+
+        // more special characters for Latex.
+        ch in setOf('^', '_', '{', '}', '\\') -> null
+
+        // Open brackets
+        ch in setOf('(', '[') -> atomWithType(MTMathAtomType.KMTMathAtomOpen, chStr)
+
+        // Close brackets
+        ch in setOf(')', ']', '!', '?') -> atomWithType(MTMathAtomType.KMTMathAtomClose, chStr)
+
+        // Punctuation
+        ch in setOf(',', ';') -> atomWithType(MTMathAtomType.KMTMathAtomPunctuation, chStr)
+
+        // Relations
+        ch in setOf('=', '>', '<') -> atomWithType(MTMathAtomType.KMTMathAtomRelation, chStr)
+
+        // Math colon is ratio. Regular colon is \colon
+        ch == ':' -> atomWithType(MTMathAtomType.KMTMathAtomRelation, "\u2236")
+
+        // Use the math minus sign
+        ch == '-' -> atomWithType(MTMathAtomType.KMTMathAtomBinaryOperator, "\u2212")
+
+        // Binary operators
+        ch in setOf('+', '*') -> atomWithType(MTMathAtomType.KMTMathAtomBinaryOperator, chStr)
+
+        // Numbers
+        ch == '.' || ch in '0'..'9' -> atomWithType(MTMathAtomType.KMTMathAtomNumber, chStr)
+
+        // Variables
+        ch in 'a'..'z' || ch in 'A'..'Z' -> atomWithType(MTMathAtomType.KMTMathAtomVariable, chStr)
+
+        // Just an ordinary character. The following are allowed ordinary chars: | / ` @ "
+        ch in setOf('"', '/', '@', '`', '|') -> atomWithType(
+          MTMathAtomType.KMTMathAtomOrdinary,
+          chStr,
+        )
+
+        else -> throw MathDisplayException("Unknown ascii character $ch. Should have been accounted for.")
         }
+    }
+  }
 
-        val subscript: MTMathList? = this.subScript
-        if (subscript != null) {
-            str += "_{" + MTMathListBuilder.toLatexString(subscript) + "}"
-        }
 
-        return str
+  open fun toLatexString(): String {
+    var str = nucleus
+
+    str = toStringSubs(str)
+    return str
+  }
+
+  fun toStringSubs(s: String): String = buildString {
+    append(s)
+
+    superScript?.let {
+      append("^{${MTMathListBuilder.toLatexString(it)}}")
     }
 
+    subScript?.let {
+      append("_{${MTMathListBuilder.toLatexString(it)}}")
+    }
+  }
 
-    fun copyDeepContent(atom: MTMathAtom): MTMathAtom {
-        if (this.subScript != null) {
-            atom.subScript = this.subScript?.copyDeep()
-        }
-        if (this.superScript != null) {
-            atom.superScript = this.superScript?.copyDeep()
-        }
-        // fusedAtoms are only used in preprocessing which comes after finalized which uses copyDeep()
-        // No need to copy fusedAtoms but assert here to find any coding error
-        assert(atom.fusedAtoms.isEmpty())
-        atom.fontStyle = this.fontStyle
-        atom.indexRange = this.indexRange.copy()
-        return atom
+
+  fun copyDeepContent(atom: MTMathAtom): MTMathAtom {
+    if (this.subScript != null) {
+      atom.subScript = this.subScript?.copyDeep()
+    }
+    if (this.superScript != null) {
+      atom.superScript = this.superScript?.copyDeep()
+    }
+    // fusedAtoms are only used in preprocessing which comes after finalized which uses copyDeep()
+    // No need to copy fusedAtoms but assert here to find any coding error
+    assert(atom.fusedAtoms.isEmpty())
+    atom.fontStyle = this.fontStyle
+    atom.indexRange = this.indexRange.copy()
+    return atom
+  }
+
+  open fun copyDeep(): MTMathAtom = MTMathAtom(this.type, this.nucleus).apply {
+    copyDeepContent(this)
+  }
+
+  fun finalized(newNode: MTMathAtom): MTMathAtom {
+    if (this.superScript != null) {
+      newNode.superScript = newNode.superScript?.finalized()
+    }
+    if (this.subScript != null) {
+      newNode.subScript = newNode.subScript?.finalized()
+    }
+    newNode.fontStyle = this.fontStyle
+    newNode.indexRange = this.indexRange.copy()
+    return newNode
+  }
+
+  open fun finalized(): MTMathAtom {
+    val atom = this.copyDeep()
+    return finalized(atom)
+  }
+
+
+  /** Returns true if this atom allows scripts (sub or super). */
+
+  fun scriptsAllowed(): Boolean = this.type < MTMathAtomType.KMTMathAtomBoundary
+
+
+  fun description(): String = typeToText(this.type) + " " + this
+
+  /// Fuse the given atom with this one by combining their nucleii.
+  fun fuse(atom: MTMathAtom) {
+    if (this.subScript != null) throw MathDisplayException("Cannot fuse into an atom which has a subscript: $this")
+    if (this.superScript != null) throw MathDisplayException("Cannot fuse into an atom which has a superscript: $this")
+    if (this.type != atom.type) throw MathDisplayException("Only atoms of the same type can be fused: $this $atom")
+
+    // Update the fused atoms list
+    if (this.fusedAtoms.isEmpty()) {
+      this.fusedAtoms.add(this.copyDeep())
+    }
+    if (atom.fusedAtoms.isNotEmpty()) {
+      this.fusedAtoms.addAll(atom.fusedAtoms.toTypedArray())
+    } else {
+      this.fusedAtoms.add(atom)
     }
 
-    open fun copyDeep(): MTMathAtom {
-        val atom = MTMathAtom(this.type, this.nucleus)
-        copyDeepContent(atom)
-        return atom
-    }
+    // Update the nucleus
+    this.nucleus += atom.nucleus
 
-    fun finalized(newNode: MTMathAtom): MTMathAtom {
-        if (this.superScript != null) {
-            newNode.superScript = newNode.superScript?.finalized()
-        }
-        if (this.subScript != null) {
-            newNode.subScript = newNode.subScript?.finalized()
-        }
-        newNode.fontStyle = this.fontStyle
-        newNode.indexRange = this.indexRange.copy()
-        return newNode
-    }
+    // Update the range
+    this.indexRange.length += atom.indexRange.length
 
-    open fun finalized(): MTMathAtom {
-        val atom = this.copyDeep()
-        return finalized(atom)
-    }
-
-
-    /** Returns true if this atom allows scripts (sub or super). */
-
-    fun scriptsAllowed(): Boolean {
-        return (this.type < MTMathAtomType.KMTMathAtomBoundary)
-    }
-
-
-    fun description(): String {
-        return typeToText(this.type) + " " + this
-    }
-
-    /// Fuse the given atom with this one by combining their nucleii.
-    fun fuse(atom: MTMathAtom) {
-        if (this.subScript != null) throw MathDisplayException("Cannot fuse into an atom which has a subscript: $this")
-        if (this.superScript != null) throw MathDisplayException("Cannot fuse into an atom which has a superscript: $this")
-        if (this.type != atom.type) throw MathDisplayException("Only atoms of the same type can be fused: $this $atom")
-
-        // Update the fused atoms list
-        if (this.fusedAtoms.size == 0) {
-            this.fusedAtoms.add(this.copyDeep())
-        }
-        if (atom.fusedAtoms.size != 0) {
-            this.fusedAtoms.addAll(atom.fusedAtoms.toTypedArray())
-        } else {
-            this.fusedAtoms.add(atom)
-        }
-
-        // Update the nucleus
-        this.nucleus += atom.nucleus
-
-        // Update the range
-        this.indexRange.length += atom.indexRange.length
-
-        // Update super/sub scripts
-        this.subScript = atom.subScript
-        this.superScript = atom.superScript
-    }
-
-
+    // Update super/sub scripts
+    this.subScript = atom.subScript
+    this.superScript = atom.superScript
+  }
 }
 
 
 // Fractions have no nucleus and are always KMTMathAtomFraction type
 
 class MTFraction() : MTMathAtom(MTMathAtomType.KMTMathAtomFraction, "") {
+  /// Numerator of the fraction
+  var numerator: MTMathList? = null
 
-    /// Numerator of the fraction
-    var numerator: MTMathList? = null
-    /// Denominator of the fraction
-    var denominator: MTMathList? = null
-    /**If true, the fraction has a rule (i.e. a line) between the numerator and denominator.
-    The default value is true. */
-    var hasRule: Boolean = true
+  /// Denominator of the fraction
+  var denominator: MTMathList? = null
 
-    /** An optional delimiter for a fraction on the left. */
-    var leftDelimiter: String? = null
-    /** An optional delimiter for a fraction on the right. */
-    var rightDelimiter: String? = null
+  /**If true, the fraction has a rule (i.e. a line) between the numerator and denominator.
+  The default value is true. */
+  var hasRule: Boolean = true
 
-    // fractions have no nucleus
-    constructor(rule: Boolean) : this() {
-        hasRule = rule
+  /** An optional delimiter for a fraction on the left. */
+  var leftDelimiter: String? = null
+
+  /** An optional delimiter for a fraction on the right. */
+  var rightDelimiter: String? = null
+
+  // fractions have no nucleus
+  constructor(rule: Boolean) : this() {
+    hasRule = rule
+  }
+
+  override fun toLatexString(): String = buildString {
+    append(if (hasRule) "\\frac" else "\\atop")
+
+    if (leftDelimiter != null || rightDelimiter != null) {
+      append("[$leftDelimiter][$rightDelimiter]")
     }
 
-    override fun toLatexString(): String {
-        var str = ""
+    val nstr = numerator?.let { MTMathListBuilder.toLatexString(it) } ?: ""
+    val dstr = denominator?.let { MTMathListBuilder.toLatexString(it) } ?: ""
 
-        str += if (this.hasRule) {
-            "\\frac"
-        } else {
-            "\\atop"
-        }
-        if (this.leftDelimiter != null || this.rightDelimiter != null) {
-            str += "[$this.leftDelimiter][$this.rightDelimiter]"
-        }
+    append("{$nstr}{$dstr}")
 
-        var nstr = ""
-        val num: MTMathList? = this.numerator
-        if (num != null) {
-            nstr = MTMathListBuilder.toLatexString(num)
-        }
-        var dstr = ""
-        val den: MTMathList? = this.denominator
-        if (den != null) {
-            dstr = MTMathListBuilder.toLatexString(den)
-        }
-        str += "{$nstr}{$dstr}"
+    toString().let { super.toStringSubs(it) }
+  }
 
-        return super.toStringSubs(str)
-    }
+  override fun copyDeep(): MTFraction {
+    val atom = MTFraction(this.hasRule)
+    super.copyDeepContent(atom)
+    atom.hasRule = this.hasRule
+    atom.numerator = this.numerator?.copyDeep()
+    atom.denominator = this.denominator?.copyDeep()
+    atom.leftDelimiter = this.leftDelimiter
+    atom.rightDelimiter = this.rightDelimiter
+    return atom
+  }
 
-
-    override fun copyDeep(): MTFraction {
-        val atom = MTFraction(this.hasRule)
-        super.copyDeepContent(atom)
-        atom.hasRule = this.hasRule
-        atom.numerator = this.numerator?.copyDeep()
-        atom.denominator = this.denominator?.copyDeep()
-        atom.leftDelimiter = this.leftDelimiter
-        atom.rightDelimiter = this.rightDelimiter
-        return atom
-    }
-
-    override fun finalized(): MTFraction {
-        val newFrac: MTFraction = this.copyDeep()
-        super.finalized(newFrac)
-        newFrac.numerator = newFrac.numerator?.finalized()
-        newFrac.denominator = newFrac.denominator?.finalized()
-        return newFrac
-    }
+  override fun finalized(): MTFraction {
+    val newFrac: MTFraction = this.copyDeep()
+    super.finalized(newFrac)
+    newFrac.numerator = newFrac.numerator?.finalized()
+    newFrac.denominator = newFrac.denominator?.finalized()
+    return newFrac
+  }
 }
 
 // Radicals have no nucleus and are always KMTMathAtomRadical type
 class MTRadical : MTMathAtom(MTMathAtomType.KMTMathAtomRadical, "") {
+  /// Denotes the degree of the radical, i.e. the value to the top left of the radical sign
+  /// This can be null if there is no degree.
+  var degree: MTMathList? = null
 
-    /// Denotes the degree of the radical, i.e. the value to the top left of the radical sign
-    /// This can be null if there is no degree.
-    var degree: MTMathList? = null
+  /// Denotes the term under the square root sign
+  ///
 
-    /// Denotes the term under the square root sign
-    ///
-
-    var radicand: MTMathList? = null
+  var radicand: MTMathList? = null
 
 
-    override fun toLatexString(): String {
-        var str = "\\sqrt"
+  override fun toLatexString(): String {
+    var str = "\\sqrt"
 
-        val deg: MTMathList? = this.degree
-        if (deg != null) {
-            val dstr = MTMathListBuilder.toLatexString(deg)
-            str += "[$dstr]"
-        }
-
-        val rad: MTMathList? = this.radicand
-        var rstr = ""
-        if (rad != null) {
-            rstr = MTMathListBuilder.toLatexString(rad)
-        }
-
-        str += "{$rstr}"
-
-        return super.toStringSubs(str)
+    val deg: MTMathList? = this.degree
+    if (deg != null) {
+      val dstr = MTMathListBuilder.toLatexString(deg)
+      str += "[$dstr]"
     }
 
-    override fun copyDeep(): MTRadical {
-        val atom = MTRadical()
-        super.copyDeepContent(atom)
-        atom.radicand = this.radicand?.copyDeep()
-        atom.degree = this.degree?.copyDeep()
-        return atom
+    val rad: MTMathList? = this.radicand
+    var rstr = ""
+    if (rad != null) {
+      rstr = MTMathListBuilder.toLatexString(rad)
     }
 
-    override fun finalized(): MTRadical {
-        val newRad: MTRadical = this.copyDeep()
-        super.finalized(newRad)
-        newRad.radicand = newRad.radicand?.finalized()
-        newRad.degree = newRad.degree?.finalized()
-        return newRad
-    }
+    str += "{$rstr}"
 
+    return super.toStringSubs(str)
+  }
+
+  override fun copyDeep(): MTRadical {
+    val atom = MTRadical()
+    super.copyDeepContent(atom)
+    atom.radicand = this.radicand?.copyDeep()
+    atom.degree = this.degree?.copyDeep()
+    return atom
+  }
+
+  override fun finalized(): MTRadical {
+    val newRad: MTRadical = this.copyDeep()
+    super.finalized(newRad)
+    newRad.radicand = newRad.radicand?.finalized()
+    newRad.degree = newRad.degree?.finalized()
+    return newRad
+  }
 }
 
 
-class MTLargeOperator(nucleus: String) : MTMathAtom(MTMathAtomType.KMTMathAtomLargeOperator, nucleus) {
-    var hasLimits = false
+class MTLargeOperator(nucleus: String) :
+  MTMathAtom(MTMathAtomType.KMTMathAtomLargeOperator, nucleus) {
+  var hasLimits = false
 
-    constructor(nucleus: String, limits: Boolean) : this(nucleus) {
-        hasLimits = limits
-    }
+  constructor(nucleus: String, limits: Boolean) : this(nucleus) {
+    hasLimits = limits
+  }
 
-    override fun copyDeep(): MTLargeOperator {
-        val atom = MTLargeOperator(nucleus, hasLimits)
-        super.copyDeepContent(atom)
-        return atom
-    }
+  override fun copyDeep(): MTLargeOperator {
+    val atom = MTLargeOperator(nucleus, hasLimits)
+    super.copyDeepContent(atom)
+    return atom
+  }
 }
 
 // Inners have no nucleus and are always KMTMathAtomInner type
 class MTInner : MTMathAtom(MTMathAtomType.KMTMathAtomInner, "") {
+  /// The inner math list
+  var innerList: MTMathList? = null
 
-
-    /// The inner math list
-    var innerList: MTMathList? = null
-    /// The left boundary atom. This must be a node of type KMTMathAtomBoundary
-    var leftBoundary: MTMathAtom? = null
-        set(value) {
-            if (value != null && value.type != MTMathAtomType.KMTMathAtomBoundary) {
-                throw MathDisplayException("Left boundary must be of type KMTMathAtomBoundary $value")
-            }
-            field = value
-        }
-
-    /// The right boundary atom. This must be a node of type KMTMathAtomBoundary
-    var rightBoundary: MTMathAtom? = null
-        set(value) {
-            if (value != null && value.type != MTMathAtomType.KMTMathAtomBoundary) {
-                throw MathDisplayException("Right boundary must be of type KMTMathAtomBoundary $value")
-            }
-            field = value
-        }
-
-
-    override fun toLatexString(): String {
-        var str = "\\inner"
-
-        val lb = this.leftBoundary
-        if (lb != null) {
-            str += "[" + lb.nucleus + "]"
-        }
-
-        val il: MTMathList? = this.innerList
-        var istr = ""
-        if (il != null) {
-            istr = MTMathListBuilder.toLatexString(il)
-        }
-
-        str += "{$istr}"
-
-        val rb = this.rightBoundary
-        if (rb != null) {
-            str += "[" + rb.nucleus + "]"
-        }
-        return super.toStringSubs(str)
+  /// The left boundary atom. This must be a node of type KMTMathAtomBoundary
+  var leftBoundary: MTMathAtom? = null
+    set(value) {
+      if (value != null && value.type != MTMathAtomType.KMTMathAtomBoundary) {
+        throw MathDisplayException("Left boundary must be of type KMTMathAtomBoundary $value")
+      }
+      field = value
     }
 
-    override fun copyDeep(): MTInner {
-        val atom = MTInner()
-        super.copyDeepContent(atom)
-        atom.innerList = this.innerList?.copyDeep()
-        atom.leftBoundary = this.leftBoundary?.copyDeep()
-        atom.rightBoundary = this.rightBoundary?.copyDeep()
-        return atom
+  /// The right boundary atom. This must be a node of type KMTMathAtomBoundary
+  var rightBoundary: MTMathAtom? = null
+    set(value) {
+      if (value != null && value.type != MTMathAtomType.KMTMathAtomBoundary) {
+        throw MathDisplayException("Right boundary must be of type KMTMathAtomBoundary $value")
+      }
+      field = value
     }
 
-    override fun finalized(): MTInner {
-        val newInner: MTInner = this.copyDeep()
-        super.finalized(newInner)
-        newInner.innerList = newInner.innerList?.finalized()
-        newInner.leftBoundary = newInner.leftBoundary?.finalized()
-        newInner.rightBoundary = newInner.rightBoundary?.finalized()
-        return newInner
+
+  override fun toLatexString(): String {
+    var str = "\\inner"
+
+    val lb = this.leftBoundary
+    if (lb != null) {
+      str += "[" + lb.nucleus + "]"
     }
 
+    val il: MTMathList? = this.innerList
+    var istr = ""
+    if (il != null) {
+      istr = MTMathListBuilder.toLatexString(il)
+    }
+
+    str += "{$istr}"
+
+    val rb = this.rightBoundary
+    if (rb != null) {
+      str += "[" + rb.nucleus + "]"
+    }
+    return super.toStringSubs(str)
+  }
+
+  override fun copyDeep(): MTInner {
+    val atom = MTInner()
+    super.copyDeepContent(atom)
+    atom.innerList = this.innerList?.copyDeep()
+    atom.leftBoundary = this.leftBoundary?.copyDeep()
+    atom.rightBoundary = this.rightBoundary?.copyDeep()
+    return atom
+  }
+
+  override fun finalized(): MTInner {
+    val newInner: MTInner = this.copyDeep()
+    super.finalized(newInner)
+    newInner.innerList = newInner.innerList?.finalized()
+    newInner.leftBoundary = newInner.leftBoundary?.finalized()
+    newInner.rightBoundary = newInner.rightBoundary?.finalized()
+    return newInner
+  }
 }
 
 // OverLines have no nucleus and are always KMTMathAtomOverline type
 class MTOverLine : MTMathAtom(MTMathAtomType.KMTMathAtomOverline, "") {
+  /// The inner math list
+  var innerList: MTMathList? = null
 
-
-    /// The inner math list
-    var innerList: MTMathList? = null
-
-    override fun toLatexString(): String {
-        val il: MTMathList? = this.innerList
-        var istr = ""
-        if (il != null) {
-            istr = MTMathListBuilder.toLatexString(il)
-        }
-
-        return "{$istr}"
+  override fun toLatexString(): String {
+    val il: MTMathList? = this.innerList
+    var istr = ""
+    if (il != null) {
+      istr = MTMathListBuilder.toLatexString(il)
     }
 
-    override fun copyDeep(): MTOverLine {
-        val atom = MTOverLine()
-        super.copyDeepContent(atom)
-        atom.innerList = this.innerList?.copyDeep()
-        return atom
-    }
+    return "{$istr}"
+  }
 
-    override fun finalized(): MTOverLine {
-        val newOverLine: MTOverLine = this.copyDeep()
-        super.finalized(newOverLine)
-        newOverLine.innerList = newOverLine.innerList?.finalized()
-        return newOverLine
-    }
+  override fun copyDeep(): MTOverLine {
+    val atom = MTOverLine()
+    super.copyDeepContent(atom)
+    atom.innerList = this.innerList?.copyDeep()
+    return atom
+  }
 
-
+  override fun finalized(): MTOverLine {
+    val newOverLine: MTOverLine = this.copyDeep()
+    super.finalized(newOverLine)
+    newOverLine.innerList = newOverLine.innerList?.finalized()
+    return newOverLine
+  }
 }
 
 // UnderLines have no nucleus and are always KMTMathAtomUnderline type
 class MTUnderLine : MTMathAtom(MTMathAtomType.KMTMathAtomUnderline, "") {
+  /// The inner math list
+  var innerList: MTMathList? = null
 
-
-    /// The inner math list
-    var innerList: MTMathList? = null
-
-    override fun toLatexString(): String {
-        val il: MTMathList? = this.innerList
-        var istr = ""
-        if (il != null) {
-            istr = MTMathListBuilder.toLatexString(il)
-        }
-
-        return "{$istr}"
+  override fun toLatexString(): String {
+    val il: MTMathList? = this.innerList
+    var istr = ""
+    if (il != null) {
+      istr = MTMathListBuilder.toLatexString(il)
     }
 
-    override fun copyDeep(): MTUnderLine {
-        val atom = MTUnderLine()
-        super.copyDeepContent(atom)
-        atom.innerList = this.innerList?.copyDeep()
-        return atom
-    }
+    return "{$istr}"
+  }
 
-    override fun finalized(): MTUnderLine {
-        val newUnderLine: MTUnderLine = this.copyDeep()
-        super.finalized(newUnderLine)
-        newUnderLine.innerList = newUnderLine.innerList?.finalized()
-        return newUnderLine
-    }
+  override fun copyDeep(): MTUnderLine {
+    val atom = MTUnderLine()
+    super.copyDeepContent(atom)
+    atom.innerList = this.innerList?.copyDeep()
+    return atom
+  }
 
+  override fun finalized(): MTUnderLine {
+    val newUnderLine: MTUnderLine = this.copyDeep()
+    super.finalized(newUnderLine)
+    newUnderLine.innerList = newUnderLine.innerList?.finalized()
+    return newUnderLine
+  }
 }
 
-// Accents  are always KMTMathAtomUnderline type
+// Accents are always KMTMathAtomUnderline type
 class MTAccent(nucleus: String) : MTMathAtom(MTMathAtomType.KMTMathAtomAccent, nucleus) {
+  /// The inner math list
+  var innerList: MTMathList? = null
 
-
-    /// The inner math list
-    var innerList: MTMathList? = null
-
-    override fun toLatexString(): String {
-        val il: MTMathList? = this.innerList
-        var istr = ""
-        if (il != null) {
-            istr = MTMathListBuilder.toLatexString(il)
-        }
-
-        return "{$istr}"
+  override fun toLatexString(): String {
+    val il: MTMathList? = this.innerList
+    var istr = ""
+    if (il != null) {
+      istr = MTMathListBuilder.toLatexString(il)
     }
 
-    override fun copyDeep(): MTAccent {
-        val atom = MTAccent(nucleus)
-        super.copyDeepContent(atom)
-        atom.innerList = this.innerList?.copyDeep()
-        return atom
-    }
+    return "{$istr}"
+  }
 
-    override fun finalized(): MTAccent {
-        val newAccent: MTAccent = this.copyDeep()
-        super.finalized(newAccent)
-        newAccent.innerList = newAccent.innerList?.finalized()
-        return newAccent
-    }
+  override fun copyDeep(): MTAccent {
+    val atom = MTAccent(nucleus)
+    super.copyDeepContent(atom)
+    atom.innerList = this.innerList?.copyDeep()
+    return atom
+  }
 
+  override fun finalized(): MTAccent {
+    val newAccent: MTAccent = this.copyDeep()
+    super.finalized(newAccent)
+    newAccent.innerList = newAccent.innerList?.finalized()
+    return newAccent
+  }
 }
 
-// Spaces  are  KMTMathAtomSpace with a float for space and no nucleus
+// Spaces are KMTMathAtomSpace with a float for space and no nucleus
 class MTMathSpace() : MTMathAtom(MTMathAtomType.KMTMathAtomSpace, "") {
+  var space: Float = 0f
 
-    var space: Float = 0f
-
-    constructor(sp: Float) : this() {
-        space = sp
-    }
-
-
-    override fun copyDeep(): MTMathSpace {
-        val atom = MTMathSpace(space)
-        super.copyDeepContent(atom)
-        return atom
-    }
+  constructor(sp: Float) : this() {
+    space = sp
+  }
 
 
+  override fun copyDeep(): MTMathSpace {
+    val atom = MTMathSpace(space)
+    super.copyDeepContent(atom)
+    return atom
+  }
 }
 
 /**
@@ -813,130 +698,123 @@ class MTMathSpace() : MTMathAtom(MTMathAtomType.KMTMathAtomSpace, "") {
 @brief Styling of a line of math
  */
 enum class MTLineStyle {
-    /// Display style
-    KMTLineStyleDisplay,
-    /// Text style (inline)
-    KMTLineStyleText,
-    /// Script style (for sub/super scripts)
-    KMTLineStyleScript,
-    /// Script script style (for scripts of scripts)
-    KMTLineStyleScriptScript
+  /// Display style
+  KMTLineStyleDisplay,
+
+  /// Text style (inline)
+  KMTLineStyleText,
+
+  /// Script style (for sub/super scripts)
+  KMTLineStyleScript,
+
+  /// Script script style (for scripts of scripts)
+  KMTLineStyleScriptScript
 }
 
-// Styles are  KMTMathAtomStyle with a MTLineStyle and no nucleus
+// Styles are KMTMathAtomStyle with a MTLineStyle and no nucleus
 class MTMathStyle() : MTMathAtom(MTMathAtomType.KMTMathAtomStyle, "") {
+  var style: MTLineStyle = MTLineStyle.KMTLineStyleDisplay
 
-    var style: MTLineStyle = MTLineStyle.KMTLineStyleDisplay
+  constructor(st: MTLineStyle) : this() {
+    style = st
+  }
 
-    constructor(st: MTLineStyle) : this() {
-        style = st
-    }
-
-
-    override fun copyDeep(): MTMathStyle {
-        val atom = MTMathStyle(style)
-        super.copyDeepContent(atom)
-        return atom
-    }
-
-
+  override fun copyDeep(): MTMathStyle {
+    val atom = MTMathStyle(style)
+    super.copyDeepContent(atom)
+    return atom
+  }
 }
 
 
 // Colors are always KMTMathAtomColor type with a string for the color
 class MTMathColor : MTMathAtom(MTMathAtomType.KMTMathAtomColor, "") {
+  /// The inner math list
+  var innerList: MTMathList? = null
+  var colorString: String? = null
 
+  override fun toLatexString(): String {
+    var str = "\\color"
 
-    /// The inner math list
-    var innerList: MTMathList? = null
-    var colorString: String? = null
+    str += "{$this.colorString}{$this.innerList}"
 
+    return super.toStringSubs(str)
+  }
 
-    override fun toLatexString(): String {
-        var str = "\\color"
+  override fun copyDeep(): MTMathColor {
+    val atom = MTMathColor()
+    super.copyDeepContent(atom)
+    atom.innerList = this.innerList?.copyDeep()
+    atom.colorString = this.colorString
+    return atom
+  }
 
-        str += "{$this.colorString}{$this.innerList}"
-
-        return super.toStringSubs(str)
-    }
-
-    override fun copyDeep(): MTMathColor {
-        val atom = MTMathColor()
-        super.copyDeepContent(atom)
-        atom.innerList = this.innerList?.copyDeep()
-        atom.colorString = this.colorString
-        return atom
-    }
-
-    override fun finalized(): MTMathColor {
-        val newColor: MTMathColor = this.copyDeep()
-        super.finalized(newColor)
-        newColor.innerList = newColor.innerList?.finalized()
-        return newColor
-    }
-
+  override fun finalized(): MTMathColor {
+    val newColor: MTMathColor = this.copyDeep()
+    super.finalized(newColor)
+    newColor.innerList = newColor.innerList?.finalized()
+    return newColor
+  }
 }
 
 
 // Colors are always KMTMathAtomColor type with a string for the color
 class MTMathTextColor : MTMathAtom(MTMathAtomType.KMTMathAtomTextColor, "") {
+  /// The inner math list
+  var innerList: MTMathList? = null
+  var colorString: String? = null
 
 
-    /// The inner math list
-    var innerList: MTMathList? = null
-    var colorString: String? = null
+  override fun toLatexString(): String {
+    var str = "\\textcolor"
 
+    str += "{$this.colorString}{$this.innerList}"
 
-    override fun toLatexString(): String {
-        var str = "\\textcolor"
+    return super.toStringSubs(str)
+  }
 
-        str += "{$this.colorString}{$this.innerList}"
+  override fun copyDeep(): MTMathTextColor {
+    val atom = MTMathTextColor()
+    super.copyDeepContent(atom)
+    atom.innerList = this.innerList?.copyDeep()
+    atom.colorString = this.colorString
+    return atom
+  }
 
-        return super.toStringSubs(str)
-    }
-
-    override fun copyDeep(): MTMathTextColor {
-        val atom = MTMathTextColor()
-        super.copyDeepContent(atom)
-        atom.innerList = this.innerList?.copyDeep()
-        atom.colorString = this.colorString
-        return atom
-    }
-
-    override fun finalized(): MTMathTextColor {
-        val newColor: MTMathTextColor = this.copyDeep()
-        super.finalized(newColor)
-        newColor.innerList = newColor.innerList?.finalized()
-        return newColor
-    }
+  override fun finalized(): MTMathTextColor {
+    val newColor: MTMathTextColor = this.copyDeep()
+    super.finalized(newColor)
+    newColor.innerList = newColor.innerList?.finalized()
+    return newColor
+  }
 }
 
 // MTBoxed have no nucleus and are always KMTMathAtomBoxed type
 class MTBoxed : MTMathAtom(MTMathAtomType.KMTMathAtomBoxed, "") {
-    /// The inner math list
-    var innerList: MTMathList? = null
+  /// The inner math list
+  var innerList: MTMathList? = null
 
-    override fun toLatexString(): String {
-        val il: MTMathList? = this.innerList
-        var istr = ""
-        if (il != null) {
-            istr = MTMathListBuilder.toLatexString(il)
-        }
-
-        return "\\boxed{$istr}"
+  override fun toLatexString(): String {
+    val il: MTMathList? = this.innerList
+    var istr = ""
+    if (il != null) {
+      istr = MTMathListBuilder.toLatexString(il)
     }
 
-    override fun copyDeep(): MTBoxed {
-        val atom = MTBoxed()
-        super.copyDeepContent(atom)
-        atom.innerList = this.innerList?.copyDeep()
-        return atom
-    }
+    return "\\boxed{$istr}"
+  }
 
-    override fun finalized(): MTBoxed {
-        val newBoxed: MTBoxed = this.copyDeep()
-        super.finalized(newBoxed)
-        newBoxed.innerList = newBoxed.innerList?.finalized()
-        return newBoxed
-    }
+  override fun copyDeep(): MTBoxed {
+    val atom = MTBoxed()
+    super.copyDeepContent(atom)
+    atom.innerList = this.innerList?.copyDeep()
+    return atom
+  }
+
+  override fun finalized(): MTBoxed {
+    val newBoxed: MTBoxed = this.copyDeep()
+    super.finalized(newBoxed)
+    newBoxed.innerList = newBoxed.innerList?.finalized()
+    return newBoxed
+  }
 }

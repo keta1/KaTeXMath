@@ -5,7 +5,7 @@ import icu.ketal.katexmath.parse.MTMathAtomType.*
 import icu.ketal.katexmath.parse.MTLineStyle.*
 import icu.ketal.katexmath.parse.MTColumnAlignment.*
 import icu.ketal.katexmath.parse.MTAccent
-  import icu.ketal.katexmath.parse.MTBoxed
+import icu.ketal.katexmath.parse.MTBoxed
 import icu.ketal.katexmath.parse.MTFraction
 import icu.ketal.katexmath.parse.MTInner
 import icu.ketal.katexmath.parse.MTLargeOperator
@@ -331,10 +331,12 @@ class MTTypesetter(
               val over = atom as MTOverLine
               displayAtom = this.makeOverline(over)
             }
+
             KMTMathAtomUnderline -> {
               val under = atom as MTUnderLine
               displayAtom = this.makeUnderline(under)
             }
+
             else -> {}
           }
           if (displayAtom != null) {
@@ -343,7 +345,7 @@ class MTTypesetter(
             // add super scripts || subscripts
             if (atom.subScript != null || atom.superScript != null) {
               this.makeScripts(
-                atom, displayAtom, atom.indexRange.location, 0f
+                atom, displayAtom, atom.indexRange.location, 0f,
               )
             }
           }
@@ -365,7 +367,7 @@ class MTTypesetter(
             // add super scripts || subscripts
             if (atom.subScript != null || atom.superScript != null) {
               this.makeScripts(
-                atom, displayBoxed, atom.indexRange.location, 0f
+                atom, displayBoxed, atom.indexRange.location, 0f,
               )
             }
           }
@@ -1245,7 +1247,7 @@ class MTTypesetter(
     if (boxed.innerList != null) {
       val innerListDisplay = createLineForMathList(boxed.innerList!!, font, style, cramped)
       val boxedDisplay = MTBoxedDisplay(innerListDisplay, boxed.indexRange)
-      
+
       // 设置位置
       boxedDisplay.position = currentPosition
       return boxedDisplay

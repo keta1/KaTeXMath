@@ -7,32 +7,32 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Utils {
-    public static class Pointer {
-        protected long pointer;
+  public static class Pointer {
+    protected long pointer;
 
-        public Pointer(long pointer) {
-            this.pointer = pointer;
-        }
-
-        public long getPointer() {
-            return pointer;
-        }
+    public Pointer(long pointer) {
+      this.pointer = pointer;
     }
 
-    public static byte[] loadFileToByteArray(String filepath) throws IOException {
-        File file = new File(filepath);
-        int size = (int) file.length();
-        byte[] bytes = new byte[size];
-        BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-        buf.read(bytes, 0, bytes.length);
-        buf.close();
-        return bytes;
+    public long getPointer() {
+      return pointer;
     }
+  }
 
-    /* Buffer helpers */
-    public static native ByteBuffer newBuffer(int size);
+  public static byte[] loadFileToByteArray(String filepath) throws IOException {
+    File file = new File(filepath);
+    int size = (int) file.length();
+    byte[] bytes = new byte[size];
+    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+    buf.read(bytes, 0, bytes.length);
+    buf.close();
+    return bytes;
+  }
 
-    public static native void fillBuffer(byte[] bytes, ByteBuffer buffer, int length);
+  /* Buffer helpers */
+  public static native ByteBuffer newBuffer(int size);
 
-    public static native void deleteBuffer(ByteBuffer buffer);
+  public static native void fillBuffer(byte[] bytes, ByteBuffer buffer, int length);
+
+  public static native void deleteBuffer(ByteBuffer buffer);
 }

@@ -7,276 +7,275 @@ import java.io.IOException
 import java.io.InputStream
 
 data class MTGlyphPart(
-    var glyph: Int = 0,
-    var fullAdvance: Float = 0f,
-    var startConnectorLength: Float = 0f,
-    var endConnectorLength: Float = 0f,
-    var isExtender: Boolean = false
+  var glyph: Int = 0,
+  var fullAdvance: Float = 0f,
+  var startConnectorLength: Float = 0f,
+  var endConnectorLength: Float = 0f,
+  var isExtender: Boolean = false
 )
 
 
 class BoundingBox() {
-    var lowerLeftX: Float = 0f
-    var lowerLeftY: Float = 0f
-    var upperRightX: Float = 0f
-    var upperRightY: Float = 0f
+  var lowerLeftX: Float = 0f
+  var lowerLeftY: Float = 0f
+  var upperRightX: Float = 0f
+  var upperRightY: Float = 0f
 
-    val width: Float
-        get() = this.upperRightX - this.lowerLeftX
+  val width: Float
+    get() = this.upperRightX - this.lowerLeftX
 
-    val height: Float
-        get() = this.upperRightY - this.lowerLeftY
+  val height: Float
+    get() = this.upperRightY - this.lowerLeftY
 
 
-    constructor(minX: Float, minY: Float, maxX: Float, maxY: Float) : this() {
-        this.lowerLeftX = minX
-        this.lowerLeftY = minY
-        this.upperRightX = maxX
-        this.upperRightY = maxY
-    }
+  constructor(minX: Float, minY: Float, maxX: Float, maxY: Float) : this() {
+    this.lowerLeftX = minX
+    this.lowerLeftY = minY
+    this.upperRightX = maxX
+    this.upperRightY = maxY
+  }
 
-    constructor(numbers: List<Number>) : this() {
-        this.lowerLeftX = numbers[0].toFloat()
-        this.lowerLeftY = numbers[1].toFloat()
-        this.upperRightX = numbers[2].toFloat()
-        this.upperRightY = numbers[3].toFloat()
-    }
+  constructor(numbers: List<Number>) : this() {
+    this.lowerLeftX = numbers[0].toFloat()
+    this.lowerLeftY = numbers[1].toFloat()
+    this.upperRightX = numbers[2].toFloat()
+    this.upperRightY = numbers[3].toFloat()
+  }
 
-    fun contains(x: Float, y: Float): Boolean {
-        return x >= this.lowerLeftX && x <= this.upperRightX && y >= this.lowerLeftY && y <= this.upperRightY
-    }
+  fun contains(x: Float, y: Float): Boolean {
+    return x >= this.lowerLeftX && x <= this.upperRightX && y >= this.lowerLeftY && y <= this.upperRightY
+  }
 
-    override fun toString(): String {
-        return "[" + this.lowerLeftX + "," + this.lowerLeftY + "," + this.upperRightX + "," + this.upperRightY + "]"
-    }
+  override fun toString(): String {
+    return "[" + this.lowerLeftX + "," + this.lowerLeftY + "," + this.upperRightX + "," + this.upperRightY + "]"
+  }
 }
 
 class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
-    var unitsPerEm: Int = 1
-    var fontSize: Float = 0f
-    lateinit var freeface: Face
-    lateinit var freeTypeMathTable: MTFreeTypeMathTable
+  var unitsPerEm: Int = 1
+  var fontSize: Float = 0f
+  lateinit var freeface: Face
+  lateinit var freeTypeMathTable: MTFreeTypeMathTable
 
-    /*
-    lateinit var kConstantsTable: SortedMap<String, NSObject>
-    lateinit var kVertVariantsTable: SortedMap<String, NSObject>
-    lateinit var kHorizVariantsTable: SortedMap<String, NSObject>
-    lateinit var kItalicTable: SortedMap<String, NSObject>
-    lateinit var kAccentsTable: SortedMap<String, NSObject>
-    lateinit var kVertAssemblyTable: SortedMap<String, NSObject>
-    */
+  /*
+  lateinit var kConstantsTable: SortedMap<String, NSObject>
+  lateinit var kVertVariantsTable: SortedMap<String, NSObject>
+  lateinit var kHorizVariantsTable: SortedMap<String, NSObject>
+  lateinit var kItalicTable: SortedMap<String, NSObject>
+  lateinit var kAccentsTable: SortedMap<String, NSObject>
+  lateinit var kVertAssemblyTable: SortedMap<String, NSObject>
+  */
 
-    init {
-        fontSize = font.fontSize
-        var barray: ByteArray? = null
+  init {
+    fontSize = font.fontSize
+    var barray: ByteArray? = null
 
-        if (istreamotf != null) {
-            istreamotf.use {
-                try {
-                    barray = it!!.readBytes()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    try {
-                        it?.close()
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-
-            /* --- Init FreeType --- */
-            /* get singleton */
-            val library = FreeType.newLibrary()
-                ?: throw MathDisplayException("Error initializing FreeType.")
-
-            freeface = library.newFace(barray, 0)
-            checkFontSize()
-            unitsPerEm = freeface.unitsPerEM
-
-
-            freeTypeMathTable = freeface.loadMathTable()
-
-
-            /**
-            val kConstants: String = "constants"
-            val kVertVariants = "v_variants"
-            val kHorizVariants = "h_variants"
-            val kItalic = "italic"
-            val kAccents = "accents"
-            val kVertAssembly = "v_assembly"
-
-            kConstantsTable = getMathTable(kConstants)
-            kVertVariantsTable = getMathTable(kVertVariants)
-            kHorizVariantsTable = getMathTable(kHorizVariants)
-            kItalicTable = getMathTable(kItalic)
-            kAccentsTable = getMathTable(kAccents)
-            kVertAssemblyTable = getMathTable(kVertAssembly)
-             ***/
+    if (istreamotf != null) {
+      istreamotf.use {
+        try {
+          barray = it!!.readBytes()
+        } catch (e: Exception) {
+          e.printStackTrace()
+        } finally {
+          try {
+            it?.close()
+          } catch (e: IOException) {
+            e.printStackTrace()
+          }
         }
+      }
+
+      /* --- Init FreeType --- */
+      /* get singleton */
+      val library = FreeType.newLibrary()
+        ?: throw MathDisplayException("Error initializing FreeType.")
+
+      freeface = library.newFace(barray, 0)
+      checkFontSize()
+      unitsPerEm = freeface.unitsPerEM
+
+
+      freeTypeMathTable = freeface.loadMathTable()
+
+
+      /**
+      val kConstants: String = "constants"
+      val kVertVariants = "v_variants"
+      val kHorizVariants = "h_variants"
+      val kItalic = "italic"
+      val kAccents = "accents"
+      val kVertAssembly = "v_assembly"
+
+      kConstantsTable = getMathTable(kConstants)
+      kVertVariantsTable = getMathTable(kVertVariants)
+      kHorizVariantsTable = getMathTable(kHorizVariants)
+      kItalicTable = getMathTable(kItalic)
+      kAccentsTable = getMathTable(kAccents)
+      kVertAssemblyTable = getMathTable(kVertAssembly)
+       ***/
     }
+  }
 
-    fun checkFontSize(): Face {
-        freeface.setCharSize(0, (fontSize * 64).toInt(), 0, 0)
-        return (freeface)
-    }
+  fun checkFontSize(): Face {
+    freeface.setCharSize(0, (fontSize * 64).toInt(), 0, 0)
+    return (freeface)
+  }
 
-    // Lightweight copy
-    fun copyFontTableWithSize(size: Float): MTFontMathTable {
-        val copyTable = MTFontMathTable(font, null)
-        copyTable.fontSize = size
-        copyTable.unitsPerEm = this.unitsPerEm
-        copyTable.freeface = this.freeface
-        copyTable.freeTypeMathTable = this.freeTypeMathTable
+  // Lightweight copy
+  fun copyFontTableWithSize(size: Float): MTFontMathTable {
+    val copyTable = MTFontMathTable(font, null)
+    copyTable.fontSize = size
+    copyTable.unitsPerEm = this.unitsPerEm
+    copyTable.freeface = this.freeface
+    copyTable.freeTypeMathTable = this.freeTypeMathTable
 
-        return copyTable
-    }
+    return copyTable
+  }
 
-    fun getGlyphName(gid: Int): String {
-        val g = this.freeface.getGlyphName(gid)
-        return g
-    }
+  fun getGlyphName(gid: Int): String {
+    val g = this.freeface.getGlyphName(gid)
+    return g
+  }
 
-    fun getGlyphWithName(glyphName: String): Int {
-        val g = this.freeface.getGlyphIndexByName(glyphName)
-        return g
-    }
+  fun getGlyphWithName(glyphName: String): Int {
+    val g = this.freeface.getGlyphIndexByName(glyphName)
+    return g
+  }
 
-    fun getGlyphForCodepoint(codepoint: Int): Int {
-        val g = this.freeface.getCharIndex(codepoint)
-        return g
-    }
+  fun getGlyphForCodepoint(codepoint: Int): Int {
+    val g = this.freeface.getCharIndex(codepoint)
+    return g
+  }
 
-    fun getAdvancesForGlyphs(glyphs: List<Int>, advances: Array<Float>, count: Int) {
-        for (i in 0 until count) {
-            if (!freeface.loadGlyph(glyphs[i], FT_LOAD_NO_SCALE)) {
-                val gslot = freeface.getGlyphSlot()
-                val a = gslot.advance
-                if (a != null) {
-                    advances[i] = fontUnitsToPt(a.x)
-                }
-            }
+  fun getAdvancesForGlyphs(glyphs: List<Int>, advances: Array<Float>, count: Int) {
+    for (i in 0 until count) {
+      if (!freeface.loadGlyph(glyphs[i], FT_LOAD_NO_SCALE)) {
+        val gslot = freeface.getGlyphSlot()
+        val a = gslot.advance
+        if (a != null) {
+          advances[i] = fontUnitsToPt(a.x)
         }
+      }
     }
+  }
 
-    fun unionBounds(u: BoundingBox, b: BoundingBox) {
-        u.lowerLeftX = minOf(u.lowerLeftX, b.lowerLeftX)
-        u.lowerLeftY = minOf(u.lowerLeftY, b.lowerLeftY)
-        u.upperRightX = maxOf(u.upperRightX, b.upperRightX)
-        u.upperRightY = maxOf(u.upperRightY, b.upperRightY)
-    }
+  fun unionBounds(u: BoundingBox, b: BoundingBox) {
+    u.lowerLeftX = minOf(u.lowerLeftX, b.lowerLeftX)
+    u.lowerLeftY = minOf(u.lowerLeftY, b.lowerLeftY)
+    u.upperRightX = maxOf(u.upperRightX, b.upperRightX)
+    u.upperRightY = maxOf(u.upperRightY, b.upperRightY)
+  }
 
-    //  Good description and picture
-    // https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
+  //  Good description and picture
+  // https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
 
-    fun getBoundingRectsForGlyphs(
-        glyphs: List<Int>,
-        boundingRects: Array<BoundingBox?>?,
-        count: Int
-    ): BoundingBox {
-        val enclosing = BoundingBox()
+  fun getBoundingRectsForGlyphs(
+    glyphs: List<Int>,
+    boundingRects: Array<BoundingBox?>?,
+    count: Int
+  ): BoundingBox {
+    val enclosing = BoundingBox()
 
-        for (i in 0 until count) {
-            if (!freeface.loadGlyph(glyphs[i], FT_LOAD_NO_SCALE)) {
-                val nb = BoundingBox()
-                val gslot = freeface.getGlyphSlot()
-                val m = gslot.metrics
+    for (i in 0 until count) {
+      if (!freeface.loadGlyph(glyphs[i], FT_LOAD_NO_SCALE)) {
+        val nb = BoundingBox()
+        val gslot = freeface.getGlyphSlot()
+        val m = gslot.metrics
 
-                val w = fontUnitsToPt(m.width)
-                val h = fontUnitsToPt(m.height)
-                //val HoriAdvance = fontUnitsToPt(m.getHoriAdvance())
-                //val VertAdvance = fontUnitsToPt(m.getVertAdvance())
-                val horiBearingX = fontUnitsToPt(m.horiBearingX)
-                val horiBearingY = fontUnitsToPt(m.horiBearingY)
-                //val VertBearingX = fontUnitsToPt(m.getVertBearingX())
-                //val VertBearingY = fontUnitsToPt(m.getVertBearingY())
-                //println("$a $m $w $h $HoriAdvance $VertAdvance $horiBearingX $horiBearingY $VertBearingX $VertBearingY")
-                nb.lowerLeftX = horiBearingX
-                nb.lowerLeftY = horiBearingY - h
-                nb.upperRightX = horiBearingX + w
-                nb.upperRightY = horiBearingY
-                //println("nb $nb")
+        val w = fontUnitsToPt(m.width)
+        val h = fontUnitsToPt(m.height)
+        // val HoriAdvance = fontUnitsToPt(m.getHoriAdvance())
+        // val VertAdvance = fontUnitsToPt(m.getVertAdvance())
+        val horiBearingX = fontUnitsToPt(m.horiBearingX)
+        val horiBearingY = fontUnitsToPt(m.horiBearingY)
+        // val VertBearingX = fontUnitsToPt(m.getVertBearingX())
+        // val VertBearingY = fontUnitsToPt(m.getVertBearingY())
+        // println("$a $m $w $h $HoriAdvance $VertAdvance $horiBearingX $horiBearingY $VertBearingX $VertBearingY")
+        nb.lowerLeftX = horiBearingX
+        nb.lowerLeftY = horiBearingY - h
+        nb.upperRightX = horiBearingX + w
+        nb.upperRightY = horiBearingY
+        // println("nb $nb")
 
-                unionBounds(enclosing, nb)
-                if (boundingRects != null) {
-                    boundingRects[i] = nb
-                }
-            }
-
+        unionBounds(enclosing, nb)
+        if (boundingRects != null) {
+          boundingRects[i] = nb
         }
-        return enclosing
+      }
     }
+    return enclosing
+  }
 
-    private fun fontUnitsToPt(fontUnits: Long): Float {
-        return fontUnits * fontSize / unitsPerEm
-    }
+  private fun fontUnitsToPt(fontUnits: Long): Float {
+    return fontUnits * fontSize / unitsPerEm
+  }
 
-    private fun fontUnitsToPt(fontUnits: Int): Float {
-        return fontUnits * fontSize / unitsPerEm
-    }
+  private fun fontUnitsToPt(fontUnits: Int): Float {
+    return fontUnits * fontSize / unitsPerEm
+  }
 
-    fun fontUnitsBox(b: BoundingBox): BoundingBox {
-        val rb = BoundingBox()
-        rb.lowerLeftX = fontUnitsToPt(b.lowerLeftX.toInt())
-        rb.lowerLeftY = fontUnitsToPt(b.lowerLeftY.toInt())
-        rb.upperRightX = fontUnitsToPt(b.upperRightX.toInt())
-        rb.upperRightY = fontUnitsToPt(b.upperRightY.toInt())
-        return rb
-    }
-
-
-    fun muUnit(): Float {
-        return fontSize / 18
-    }
-
-    fun constantFromTable(constName: String): Float {
-        return fontUnitsToPt(freeTypeMathTable.getConstant(constName))
-    }
+  fun fontUnitsBox(b: BoundingBox): BoundingBox {
+    val rb = BoundingBox()
+    rb.lowerLeftX = fontUnitsToPt(b.lowerLeftX.toInt())
+    rb.lowerLeftY = fontUnitsToPt(b.lowerLeftY.toInt())
+    rb.upperRightX = fontUnitsToPt(b.upperRightX.toInt())
+    rb.upperRightY = fontUnitsToPt(b.upperRightY.toInt())
+    return rb
+  }
 
 
-    fun percentFromTable(percentName: String): Float {
-        return freeTypeMathTable.getConstant(percentName) / 100f
-    }
+  fun muUnit(): Float {
+    return fontSize / 18
+  }
 
-    val fractionNumeratorDisplayStyleShiftUp: Float
-        get() = constantFromTable("FractionNumeratorDisplayStyleShiftUp")
-
-
-    val fractionNumeratorShiftUp: Float
-        get() = constantFromTable("FractionNumeratorShiftUp")
+  fun constantFromTable(constName: String): Float {
+    return fontUnitsToPt(freeTypeMathTable.getConstant(constName))
+  }
 
 
-    val fractionDenominatorDisplayStyleShiftDown: Float
-        get() = constantFromTable("FractionDenominatorDisplayStyleShiftDown")
+  fun percentFromTable(percentName: String): Float {
+    return freeTypeMathTable.getConstant(percentName) / 100f
+  }
 
-    val fractionDenominatorShiftDown: Float
-        get() = constantFromTable("FractionDenominatorShiftDown")
-
-    val fractionNumeratorDisplayStyleGapMin: Float
-        get() = constantFromTable("FractionNumDisplayStyleGapMin")
-
-    val fractionNumeratorGapMin: Float
-        get() = constantFromTable("FractionNumeratorGapMin")
-
-    val fractionDenominatorDisplayStyleGapMin: Float
-        get() = constantFromTable("FractionDenomDisplayStyleGapMin")
+  val fractionNumeratorDisplayStyleShiftUp: Float
+    get() = constantFromTable("FractionNumeratorDisplayStyleShiftUp")
 
 
-    val fractionDenominatorGapMin: Float
-        get() = constantFromTable("FractionDenominatorGapMin")
+  val fractionNumeratorShiftUp: Float
+    get() = constantFromTable("FractionNumeratorShiftUp")
 
 
-    val fractionRuleThickness: Float
-        get() = constantFromTable("FractionRuleThickness")
+  val fractionDenominatorDisplayStyleShiftDown: Float
+    get() = constantFromTable("FractionDenominatorDisplayStyleShiftDown")
 
-    val skewedFractionHorizontalGap: Float
-        get() = constantFromTable("SkewedFractionHorizontalGap")
+  val fractionDenominatorShiftDown: Float
+    get() = constantFromTable("FractionDenominatorShiftDown")
 
-    val skewedFractionVerticalGap: Float
-        get() = constantFromTable("SkewedFractionVerticalGap")
+  val fractionNumeratorDisplayStyleGapMin: Float
+    get() = constantFromTable("FractionNumDisplayStyleGapMin")
+
+  val fractionNumeratorGapMin: Float
+    get() = constantFromTable("FractionNumeratorGapMin")
+
+  val fractionDenominatorDisplayStyleGapMin: Float
+    get() = constantFromTable("FractionDenomDisplayStyleGapMin")
 
 
-    // FractionDelimiterSize and FractionDelimiterDisplayStyleSize are not constants
+  val fractionDenominatorGapMin: Float
+    get() = constantFromTable("FractionDenominatorGapMin")
+
+
+  val fractionRuleThickness: Float
+    get() = constantFromTable("FractionRuleThickness")
+
+  val skewedFractionHorizontalGap: Float
+    get() = constantFromTable("SkewedFractionHorizontalGap")
+
+  val skewedFractionVerticalGap: Float
+    get() = constantFromTable("SkewedFractionVerticalGap")
+
+
+  // FractionDelimiterSize and FractionDelimiterDisplayStyleSize are not constants
 // specified in the OpenType Math specification. Rather these are proposed LuaTeX extensions
 // for the TeX parameters \sigma_20 (delim1) and \sigma_21 (delim2). Since these do not
 // exist in the fonts that we have, we use the same approach as LuaTeX and use the fontSize
@@ -287,234 +286,234 @@ class MTFontMathTable(val font: MTFont, var istreamotf: InputStream?) {
 // The XeTeX implementation sets \sigma21 = fontSize and \sigma20 = DelimitedSubFormulaMinHeight which
 // will produce smaller delimiters.
 // Of all the approaches we've implemented LuaTeX's approach since it mimics LaTeX most accurately.
-    val fractionDelimiterSize: Float
-        get() = 1.01f * fontSize
+  val fractionDelimiterSize: Float
+    get() = 1.01f * fontSize
 
 
-    val fractionDelimiterDisplayStyleSize: Float
-        // Modified constant from 2.4 to 2.39, it matches KaTeX and looks better.
-        get() = 2.39f * fontSize
+  val fractionDelimiterDisplayStyleSize: Float
+    // Modified constant from 2.4 to 2.39, it matches KaTeX and looks better.
+    get() = 2.39f * fontSize
 
-    // Sub/Superscripts
+  // Sub/Superscripts
 
-    val superscriptShiftUp: Float
-        get() = constantFromTable("SuperscriptShiftUp")
+  val superscriptShiftUp: Float
+    get() = constantFromTable("SuperscriptShiftUp")
 
-    val superscriptShiftUpCramped: Float
-        get() = constantFromTable("SuperscriptShiftUpCramped")
+  val superscriptShiftUpCramped: Float
+    get() = constantFromTable("SuperscriptShiftUpCramped")
 
-    val subscriptShiftDown: Float
-        get() = constantFromTable("SubscriptShiftDown")
+  val subscriptShiftDown: Float
+    get() = constantFromTable("SubscriptShiftDown")
 
-    val superscriptBaselineDropMax: Float
-        get() = constantFromTable("SuperscriptBaselineDropMax")
+  val superscriptBaselineDropMax: Float
+    get() = constantFromTable("SuperscriptBaselineDropMax")
 
-    val subscriptBaselineDropMin: Float
-        get() = constantFromTable("SubscriptBaselineDropMin")
+  val subscriptBaselineDropMin: Float
+    get() = constantFromTable("SubscriptBaselineDropMin")
 
-    val superscriptBottomMin: Float
-        get() = constantFromTable("SuperscriptBottomMin")
+  val superscriptBottomMin: Float
+    get() = constantFromTable("SuperscriptBottomMin")
 
-    val subscriptTopMax: Float
-        get() = constantFromTable("SubscriptTopMax")
+  val subscriptTopMax: Float
+    get() = constantFromTable("SubscriptTopMax")
 
-    val subSuperscriptGapMin: Float
-        get() = constantFromTable("SubSuperscriptGapMin")
+  val subSuperscriptGapMin: Float
+    get() = constantFromTable("SubSuperscriptGapMin")
 
-    val superscriptBottomMaxWithSubscript: Float
-        get() = constantFromTable("SuperscriptBottomMaxWithSubscript")
+  val superscriptBottomMaxWithSubscript: Float
+    get() = constantFromTable("SuperscriptBottomMaxWithSubscript")
 
-    val spaceAfterScript: Float
-        get() = constantFromTable("SpaceAfterScript")
+  val spaceAfterScript: Float
+    get() = constantFromTable("SpaceAfterScript")
 
-    val radicalRuleThickness: Float
-        get() = constantFromTable("RadicalRuleThickness")
+  val radicalRuleThickness: Float
+    get() = constantFromTable("RadicalRuleThickness")
 
-    val radicalExtraAscender: Float
-        get() = constantFromTable("RadicalExtraAscender")
+  val radicalExtraAscender: Float
+    get() = constantFromTable("RadicalExtraAscender")
 
-    val radicalVerticalGap: Float
-        get() = constantFromTable("RadicalVerticalGap")
+  val radicalVerticalGap: Float
+    get() = constantFromTable("RadicalVerticalGap")
 
-    val radicalDisplayStyleVerticalGap: Float
-        get() = constantFromTable("RadicalDisplayStyleVerticalGap")
+  val radicalDisplayStyleVerticalGap: Float
+    get() = constantFromTable("RadicalDisplayStyleVerticalGap")
 
-    val radicalKernBeforeDegree: Float
-        get() = constantFromTable("RadicalKernBeforeDegree")
+  val radicalKernBeforeDegree: Float
+    get() = constantFromTable("RadicalKernBeforeDegree")
 
-    val radicalKernAfterDegree: Float
-        get() = constantFromTable("RadicalKernAfterDegree")
+  val radicalKernAfterDegree: Float
+    get() = constantFromTable("RadicalKernAfterDegree")
 
-    val radicalDegreeBottomRaisePercent: Float
-        get() = percentFromTable("RadicalDegreeBottomRaisePercent")
+  val radicalDegreeBottomRaisePercent: Float
+    get() = percentFromTable("RadicalDegreeBottomRaisePercent")
 
-    // Limits
+  // Limits
 
-    val upperLimitGapMin: Float
-        get() = constantFromTable("UpperLimitGapMin")
+  val upperLimitGapMin: Float
+    get() = constantFromTable("UpperLimitGapMin")
 
-    val upperLimitBaselineRiseMin: Float
-        get() = constantFromTable("UpperLimitBaselineRiseMin")
+  val upperLimitBaselineRiseMin: Float
+    get() = constantFromTable("UpperLimitBaselineRiseMin")
 
-    val lowerLimitGapMin: Float
-        get() = constantFromTable("LowerLimitGapMin")
+  val lowerLimitGapMin: Float
+    get() = constantFromTable("LowerLimitGapMin")
 
-    val lowerLimitBaselineDropMin: Float
-        get() = constantFromTable("LowerLimitBaselineDropMin")
+  val lowerLimitBaselineDropMin: Float
+    get() = constantFromTable("LowerLimitBaselineDropMin")
 
-    // not present in OpenType fonts.
-    val limitExtraAscenderDescender: Float
-        get() = 0f
+  // not present in OpenType fonts.
+  val limitExtraAscenderDescender: Float
+    get() = 0f
 
-    // Constants
+  // Constants
 
-    val axisHeight: Float
-        get() = constantFromTable("AxisHeight")
+  val axisHeight: Float
+    get() = constantFromTable("AxisHeight")
 
-    val scriptScaleDown: Float
-        get() = percentFromTable("ScriptPercentScaleDown")
+  val scriptScaleDown: Float
+    get() = percentFromTable("ScriptPercentScaleDown")
 
-    val scriptScriptScaleDown: Float
-        get() = percentFromTable("ScriptScriptPercentScaleDown")
+  val scriptScriptScaleDown: Float
+    get() = percentFromTable("ScriptScriptPercentScaleDown")
 
-    val mathLeading: Float
-        get() = constantFromTable("MathLeading")
+  val mathLeading: Float
+    get() = constantFromTable("MathLeading")
 
-    val delimitedSubFormulaMinHeight: Float
-        get() = constantFromTable("DelimitedSubFormulaMinHeight")
+  val delimitedSubFormulaMinHeight: Float
+    get() = constantFromTable("DelimitedSubFormulaMinHeight")
 
-    // Accents
+  // Accents
 
-    val accentBaseHeight: Float
-        get() = constantFromTable("AccentBaseHeight")
+  val accentBaseHeight: Float
+    get() = constantFromTable("AccentBaseHeight")
 
-    val flattenedAccentBaseHeight: Float
-        get() = constantFromTable("FlattenedAccentBaseHeight")
+  val flattenedAccentBaseHeight: Float
+    get() = constantFromTable("FlattenedAccentBaseHeight")
 
-    // Large Operators
+  // Large Operators
 
-    val displayOperatorMinHeight: Float
-        get() = constantFromTable("DisplayOperatorMinHeight")
+  val displayOperatorMinHeight: Float
+    get() = constantFromTable("DisplayOperatorMinHeight")
 
-    // Over and Underbar
+  // Over and Underbar
 
-    val overbarExtraAscender: Float
-        get() = constantFromTable("OverbarExtraAscender")
+  val overbarExtraAscender: Float
+    get() = constantFromTable("OverbarExtraAscender")
 
-    val overbarRuleThickness: Float
-        get() = constantFromTable("OverbarRuleThickness")
+  val overbarRuleThickness: Float
+    get() = constantFromTable("OverbarRuleThickness")
 
-    val overbarVerticalGap: Float
-        get() = constantFromTable("OverbarVerticalGap")
+  val overbarVerticalGap: Float
+    get() = constantFromTable("OverbarVerticalGap")
 
-    val underbarExtraDescender: Float
-        get() = constantFromTable("UnderbarExtraDescender")
+  val underbarExtraDescender: Float
+    get() = constantFromTable("UnderbarExtraDescender")
 
-    val underbarRuleThickness: Float
-        get() = constantFromTable("UnderbarRuleThickness")
+  val underbarRuleThickness: Float
+    get() = constantFromTable("UnderbarRuleThickness")
 
-    val underbarVerticalGap: Float
-        get() = constantFromTable("UnderbarVerticalGap")
+  val underbarVerticalGap: Float
+    get() = constantFromTable("UnderbarVerticalGap")
 
-    // Stacks
+  // Stacks
 
-    val stackBottomDisplayStyleShiftDown: Float
-        get() = constantFromTable("StackBottomDisplayStyleShiftDown")
+  val stackBottomDisplayStyleShiftDown: Float
+    get() = constantFromTable("StackBottomDisplayStyleShiftDown")
 
-    val stackBottomShiftDown: Float
-        get() = constantFromTable("StackBottomShiftDown")
+  val stackBottomShiftDown: Float
+    get() = constantFromTable("StackBottomShiftDown")
 
-    val stackDisplayStyleGapMin: Float
-        get() = constantFromTable("StackDisplayStyleGapMin")
+  val stackDisplayStyleGapMin: Float
+    get() = constantFromTable("StackDisplayStyleGapMin")
 
-    val stackGapMin: Float
-        get() = constantFromTable("StackGapMin")
+  val stackGapMin: Float
+    get() = constantFromTable("StackGapMin")
 
-    val stackTopDisplayStyleShiftUp: Float
-        get() = constantFromTable("StackTopDisplayStyleShiftUp")
+  val stackTopDisplayStyleShiftUp: Float
+    get() = constantFromTable("StackTopDisplayStyleShiftUp")
 
-    val stackTopShiftUp: Float
-        get() = constantFromTable("StackTopShiftUp")
+  val stackTopShiftUp: Float
+    get() = constantFromTable("StackTopShiftUp")
 
-    val stretchStackBottomShiftDown: Float
-        get() = constantFromTable("StretchStackBottomShiftDown")
+  val stretchStackBottomShiftDown: Float
+    get() = constantFromTable("StretchStackBottomShiftDown")
 
-    val stretchStackGapAboveMin: Float
-        get() = constantFromTable("StretchStackGapAboveMin")
+  val stretchStackGapAboveMin: Float
+    get() = constantFromTable("StretchStackGapAboveMin")
 
-    val stretchStackGapBelowMin: Float
-        get() = constantFromTable("StretchStackGapBelowMin")
+  val stretchStackGapBelowMin: Float
+    get() = constantFromTable("StretchStackGapBelowMin")
 
-    val stretchStackTopShiftUp: Float
-        get() = constantFromTable("StretchStackTopShiftUp")
+  val stretchStackTopShiftUp: Float
+    get() = constantFromTable("StretchStackTopShiftUp")
 
-    // Variants
+  // Variants
 
-    fun getVerticalVariantsForGlyph(glyph: CGGlyph): List<Int> {
-        return freeTypeMathTable.getVerticalVariantsForGlyph(glyph.gid)
+  fun getVerticalVariantsForGlyph(glyph: CGGlyph): List<Int> {
+    return freeTypeMathTable.getVerticalVariantsForGlyph(glyph.gid)
+  }
+
+  fun getHorizontalVariantsForGlyph(glyph: CGGlyph): List<Int> {
+    return freeTypeMathTable.getHorizontalVariantsForGlyph(glyph.gid)
+  }
+
+  fun getLargerGlyph(glyph: Int): Int {
+    val glyphName = this.font.getGlyphName(glyph)
+    // Find the first variant with a different name.
+    val variantGlyphs = freeTypeMathTable.getVerticalVariantsForGlyph(glyph)
+    for (vglyph in variantGlyphs) {
+      val vname = this.font.getGlyphName(vglyph)
+      if (vname != glyphName) {
+        return font.getGlyphWithName(vname)
+      }
     }
+    // We did not find any variants of this glyph so return it.
+    return glyph
+  }
 
-    fun getHorizontalVariantsForGlyph(glyph: CGGlyph): List<Int> {
-        return freeTypeMathTable.getHorizontalVariantsForGlyph(glyph.gid)
+  // Italic Correction
+  fun getItalicCorrection(gid: Int): Float {
+    return fontUnitsToPt(freeTypeMathTable.getItalicCorrection(gid))
+  }
+
+  // Top Accent Adjustment
+  fun getTopAccentAdjustment(glyph: Int): Float {
+    val value = freeTypeMathTable.getTopAccentAttachment(glyph)
+    return if (value != null) {
+      fontUnitsToPt(value)
+    } else {
+      // testWideAccent test case covers this
+
+      // If no top accent is defined then it is the center of the advance width.
+      val glyphs = arrayOf(glyph)
+      val advances = arrayOf(0f)
+
+      this.getAdvancesForGlyphs(glyphs.toList(), advances, 1)
+      advances[0] / 2
     }
+  }
 
-    fun getLargerGlyph(glyph: Int): Int {
-        val glyphName = this.font.getGlyphName(glyph)
-        // Find the first variant with a different name.
-        val variantGlyphs = freeTypeMathTable.getVerticalVariantsForGlyph(glyph)
-        for (vglyph in variantGlyphs) {
-            val vname = this.font.getGlyphName(vglyph)
-            if (vname != glyphName) {
-                return font.getGlyphWithName(vname)
-            }
-        }
-        // We did not find any variants of this glyph so return it.
-        return glyph
+  // Glyph Assembly
+  val minConnectorOverlap: Float
+    get() = fontUnitsToPt(freeTypeMathTable.minConnectorOverlap)
+
+
+  fun getVerticalGlyphAssemblyForGlyph(glyph: Int): List<MTGlyphPart>? {
+    val assemblyInfo: Array<MTFreeTypeMathTable.GlyphPartRecord> =
+      freeTypeMathTable.getVerticalGlyphAssemblyForGlyph(glyph)
+        ?: // No vertical assembly defined for glyph
+        return null
+
+    val rv = mutableListOf<MTGlyphPart>()
+    for (pi in assemblyInfo) {
+      val part = MTGlyphPart()
+      part.fullAdvance = fontUnitsToPt(pi.fullAdvance)
+      part.endConnectorLength = fontUnitsToPt(pi.endConnectorLength)
+      part.startConnectorLength = fontUnitsToPt(pi.startConnectorLength)
+      part.isExtender = pi.partFlags == 1
+      part.glyph = pi.glyph
+      rv.add(part)
     }
-
-    // Italic Correction
-    fun getItalicCorrection(gid: Int): Float {
-        return fontUnitsToPt(freeTypeMathTable.getItalicCorrection(gid))
-    }
-
-    // Top Accent Adjustment
-    fun getTopAccentAdjustment(glyph: Int): Float {
-        val value = freeTypeMathTable.getTopAccentAttachment(glyph)
-        return if (value != null) {
-            fontUnitsToPt(value)
-        } else {
-            // testWideAccent test case covers this
-
-            // If no top accent is defined then it is the center of the advance width.
-            val glyphs = arrayOf(glyph)
-            val advances = arrayOf(0f)
-
-            this.getAdvancesForGlyphs(glyphs.toList(), advances, 1)
-            advances[0] / 2
-        }
-    }
-
-    // Glyph Assembly
-    val minConnectorOverlap: Float
-        get() = fontUnitsToPt(freeTypeMathTable.minConnectorOverlap)
-
-
-    fun getVerticalGlyphAssemblyForGlyph(glyph: Int): List<MTGlyphPart>? {
-        val assemblyInfo: Array<MTFreeTypeMathTable.GlyphPartRecord> =
-            freeTypeMathTable.getVerticalGlyphAssemblyForGlyph(glyph)
-                ?: // No vertical assembly defined for glyph
-                return null
-
-        val rv = mutableListOf<MTGlyphPart>()
-        for (pi in assemblyInfo) {
-            val part = MTGlyphPart()
-            part.fullAdvance = fontUnitsToPt(pi.fullAdvance)
-            part.endConnectorLength = fontUnitsToPt(pi.endConnectorLength)
-            part.startConnectorLength = fontUnitsToPt(pi.startConnectorLength)
-            part.isExtender = pi.partFlags == 1
-            part.glyph = pi.glyph
-            rv.add(part)
-        }
-        return rv
-    }
+    return rv
+  }
 }
