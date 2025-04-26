@@ -433,16 +433,26 @@ class MTMathListBuilder(str: String) {
     }
 
     return when (command) {
-      "frac", "dfrac", "tfrac", "sfrac" -> MTFraction().apply {
+      "frac", "dfrac", "tfrac" -> MTFraction().apply {
         numerator = buildInternal(true)
         denominator = buildInternal(true)
+        mathStyle = when (command) {
+          "dfrac" -> MTLineStyle.KMTLineStyleDisplay
+          "tfrac" -> MTLineStyle.KMTLineStyleText
+          else -> null
+        }
       }
 
-      "binom" -> MTFraction(false).apply {
+      "binom", "dbinom", "tbinom" -> MTFraction(false).apply {
         numerator = buildInternal(true)
         denominator = buildInternal(true)
         leftDelimiter = "("
         rightDelimiter = ")"
+        mathStyle = when (command) {
+          "dbinom" -> MTLineStyle.KMTLineStyleDisplay
+          "tbinom" -> MTLineStyle.KMTLineStyleText
+          else -> null
+        }
       }
 
       "sqrt" -> {
