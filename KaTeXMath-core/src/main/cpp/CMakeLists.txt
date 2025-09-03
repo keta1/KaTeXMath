@@ -14,9 +14,7 @@ add_library( # Sets the name of the library.
         freetype_jni.cpp
 )
 
-find_package(cxx REQUIRED CONFIG)
-
 set(FT_DISABLE_HARFBUZZ ON)
 add_subdirectory(freetype freetype)
 
-target_link_libraries(katexmath freetype cxx::cxx)
+target_link_libraries(katexmath freetype)
