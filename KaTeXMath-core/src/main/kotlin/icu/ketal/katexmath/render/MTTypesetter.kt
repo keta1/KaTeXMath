@@ -133,7 +133,12 @@ class MTTypesetter(
   private fun addInterElementSpace(prevNode: MTMathAtom?, currentType: MTMathAtomType) {
     var interElementSpace = 0f
     if (prevNode != null) {
-      interElementSpace = this.getInterElementSpace(prevNode.type, currentType)
+      val prevType = if (prevNode is MTLargeOperator && prevNode.isRelation) {
+        KMTMathAtomRelation
+      } else {
+        prevNode.type
+      }
+      interElementSpace = this.getInterElementSpace(prevType, currentType)
     } else if (spaced) {
       // For the first atom of a spaced list, treat it as if it is preceded by an open.
       interElementSpace = this.getInterElementSpace(KMTMathAtomOpen, currentType)
@@ -286,8 +291,9 @@ class MTTypesetter(
           if (currentLine.isNotEmpty()) {
             this.addDisplayLine()
           }
-          this.addInterElementSpace(prevNode, atom.type)
           val op = atom as MTLargeOperator
+          val spacingType = if (op.isRelation) KMTMathAtomRelation else atom.type
+          this.addInterElementSpace(prevNode, spacingType)
           val displayOp = this.makeLargeOp(op)
           displayAtoms.add(displayOp)
         }
@@ -1048,7 +1054,7 @@ class MTTypesetter(
   // Large Operators
 
   private fun makeLargeOp(op: MTLargeOperator): MTDisplay {
-    val limits = (op.hasLimits && style == KMTLineStyleDisplay)
+    val limits = op.hasLimits && (style == KMTLineStyleDisplay || op.limitsAlways)
     val delta: Float
 
     if (op.nucleus.length == 1) {
@@ -1103,7 +1109,8 @@ class MTTypesetter(
       currentPosition.x += display.width
       return display
     }
-    if (op.hasLimits && style == KMTLineStyleDisplay) {
+    val limits = op.hasLimits && (style == KMTLineStyleDisplay || op.limitsAlways)
+    if (limits) {
       // make limits
       var superScript: MTMathListDisplay? = null
       var subScript: MTMathListDisplay? = null

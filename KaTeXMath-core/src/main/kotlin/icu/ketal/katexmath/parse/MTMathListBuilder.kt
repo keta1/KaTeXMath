@@ -22,7 +22,6 @@ import icu.ketal.katexmath.parse.atom.MTMathTextColor
 import icu.ketal.katexmath.parse.atom.MTOverLine
 import icu.ketal.katexmath.parse.atom.MTRadical
 import icu.ketal.katexmath.parse.atom.MTUnderLine
-import icu.ketal.katexmath.render.packageWarning
 
 // NSString *const MTParseError = "ParseError"
 
@@ -437,6 +436,23 @@ class MTMathListBuilder(str: String) {
     }
 
     return when (command) {
+      "xrightarrow", "xleftarrow" -> {
+        val nucleus = if (command == "xleftarrow") "\u27F5" else "\u27F6"
+        MTLargeOperator(
+          nucleus = nucleus,
+          hasLimits = true,
+          limitsAlways = true,
+          isRelation = true,
+        ).apply {
+          if (getNextCharacter() == '[') {
+            subScript = buildInternal(false, ']')
+          } else {
+            unlookCharacter()
+          }
+          superScript = buildInternal(true)
+        }
+      }
+
       "frac", "dfrac", "tfrac" -> MTFraction().apply {
         numerator = buildInternal(true)
         denominator = buildInternal(true)
@@ -952,15 +968,10 @@ class MTMathListBuilder(str: String) {
           val op = atom as MTLargeOperator
           val command: String? = MTMathAtom.latexSymbolNameForAtom(atom)
           if (command != null) {
-            val originalOp: MTLargeOperator =
-              MTMathAtom.atomForLatexSymbolName(command) as MTLargeOperator
             str.append("\\$command ")
-            if (originalOp.hasLimits != op.hasLimits) {
-              if (op.hasLimits) {
-                str.append("\\limits ")
-              } else {
-                str.append("\\nolimits ")
-              }
+            val originalOp = MTMathAtom.atomForLatexSymbolName(command)
+            if (originalOp is MTLargeOperator && originalOp.hasLimits != op.hasLimits) {
+              str.append(if (op.hasLimits) "\\limits " else "\\nolimits ")
             }
           }
         } else if (atom.type == MTMathAtomType.KMTMathAtomSpace) {
