@@ -7,7 +7,7 @@ subprojects {
     plugins.withId("com.vanniktech.maven.publish.base") {
         configure<MavenPublishBaseExtension> {
             group = "icu.ketal.katexmath"
-            version = "0.0.1-alpha10"
+            version = "0.0.1-alpha11"
             pomFromGradleProperties()
             publishToMavenCentral()
             signAllPublications()
