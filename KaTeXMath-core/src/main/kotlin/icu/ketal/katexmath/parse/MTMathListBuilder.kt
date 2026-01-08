@@ -163,27 +163,31 @@ class MTMathListBuilder(str: String) {
           if (applyModifier(command, prevAtom)) {
             continue@outerloop
           }
-          val fontStyle: MTFontStyle? = MTMathAtom.fontStyleWithName[command]
-          if (fontStyle != null) {
-            val oldSpacesAllowed: Boolean = spacesAllowed
-            // Text has special consideration where it allows spaces without escaping.
-            spacesAllowed = command == "text"
-            val oldFontStyle: MTFontStyle = currentFontStyle
-            currentFontStyle = fontStyle
-            val sublist: MTMathList? = buildInternal(true)
-            // Restore the font style.
-            currentFontStyle = oldFontStyle
-            spacesAllowed = oldSpacesAllowed
-            if (sublist != null) {
-              prevAtom = sublist.atoms.lastOrNull()
-              list.append(sublist)
+          if (command == "dots") {
+            atom = atomForDots(prevAtom)
+          } else {
+            val fontStyle: MTFontStyle? = MTMathAtom.fontStyleWithName[command]
+            if (fontStyle != null) {
+              val oldSpacesAllowed: Boolean = spacesAllowed
+              // Text has special consideration where it allows spaces without escaping.
+              spacesAllowed = command == "text"
+              val oldFontStyle: MTFontStyle = currentFontStyle
+              currentFontStyle = fontStyle
+              val sublist: MTMathList? = buildInternal(true)
+              // Restore the font style.
+              currentFontStyle = oldFontStyle
+              spacesAllowed = oldSpacesAllowed
+              if (sublist != null) {
+                prevAtom = sublist.atoms.lastOrNull()
+                list.append(sublist)
+              }
+              if (oneCharOnly) {
+                return list
+              }
+              continue@outerloop
             }
-            if (oneCharOnly) {
-              return list
-            }
-            continue@outerloop
+            atom = atomForCommand(command)
           }
-          atom = atomForCommand(command)
           if (atom == null) {
             // this was an unknown command,
             // we flag an error and return
@@ -560,6 +564,41 @@ class MTMathListBuilder(str: String) {
         setError(MTParseErrors.InvalidCommand, "Invalid command $command")
         null
       }
+    }
+  }
+
+  private fun atomForDots(prevAtom: MTMathAtom?): MTMathAtom? {
+    val nextType = peekNextAtomType()
+    val useCdots = isDotsCentered(prevAtom, nextType)
+    val name = if (useCdots) "cdots" else "ldots"
+    return MTMathAtom.atomForLatexSymbolName(name)
+  }
+
+  private fun isDotsCentered(prevAtom: MTMathAtom?, nextType: MTMathAtomType?): Boolean {
+    if (nextType == MTMathAtomType.KMTMathAtomBinaryOperator || nextType == MTMathAtomType.KMTMathAtomRelation) {
+      return true
+    }
+    val prevType = prevAtom?.type
+    return prevType == MTMathAtomType.KMTMathAtomBinaryOperator || prevType == MTMathAtomType.KMTMathAtomRelation
+  }
+
+  private fun peekNextAtomType(): MTMathAtomType? {
+    val savedIndex = currentCharIndex
+    return try {
+      skipSpaces()
+      if (!hasCharacters()) {
+        return null
+      }
+      val ch = getNextCharacter()
+      val atom = if (ch == '\\') {
+        val command = readCommand()
+        MTMathAtom.atomForLatexSymbolName(command)
+      } else {
+        MTMathAtom.atomForCharacter(ch)
+      }
+      atom?.type
+    } finally {
+      currentCharIndex = savedIndex
     }
   }
 
