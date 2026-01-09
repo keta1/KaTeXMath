@@ -217,7 +217,11 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
       MTMathAtomType.KMTMathAtomRelation,
       MTMathAtomType.KMTMathAtomOpen,
       MTMathAtomType.KMTMathAtomPunctuation,
-      MTMathAtomType.KMTMathAtomLargeOperator -> true
+      MTMathAtomType.KMTMathAtomLargeOperator,
+      MTMathAtomType.KMTMathAtomSpace,
+      MTMathAtomType.KMTMathAtomStyle,
+      MTMathAtomType.KMTMathAtomColor,
+      MTMathAtomType.KMTMathAtomTextColor -> true
       else -> false
     }
 
