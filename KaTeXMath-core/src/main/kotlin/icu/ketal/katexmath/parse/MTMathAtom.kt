@@ -367,10 +367,10 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
 
   fun finalized(newNode: MTMathAtom): MTMathAtom {
     if (this.superScript != null) {
-      newNode.superScript = newNode.superScript?.finalized()
+      newNode.superScript = this.superScript?.finalized()
     }
     if (this.subScript != null) {
-      newNode.subScript = newNode.subScript?.finalized()
+      newNode.subScript = this.subScript?.finalized()
     }
     newNode.fontStyle = this.fontStyle
     newNode.indexRange = this.indexRange.copy()
