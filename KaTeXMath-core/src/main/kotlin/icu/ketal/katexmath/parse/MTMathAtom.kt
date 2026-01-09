@@ -135,6 +135,14 @@ enum class MTFontStyle {
   KMTFontStyleBoldItalic,
 }
 
+// Sized delimiter variants for \bigl, \Bigl, \biggl, \Biggl.
+enum class MTDelimiterSize(val multiplier: Float) {
+  Size1(1.2f),
+  Size2(1.8f),
+  Size3(2.4f),
+  Size4(3.0f)
+}
+
 /** A `MTMathAtom` is the basic unit of a math list. Each atom represents a single character
 or mathematical operator in a list. However, certain atoms can represent more complex structures
 such as fractions and radicals. Each atom has a type which determines how the atom is rendered and
@@ -179,6 +187,9 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
 
   /** The font style to be used for the atom. */
   var fontStyle: MTFontStyle = MTFontStyle.KMTFontStyleDefault
+
+  /** Optional sized delimiter flag for \bigl/\bigr and friends. */
+  var delimiterSize: MTDelimiterSize? = null
 
   /// If this atom was formed by fusion of multiple atoms, then this stores the list of atoms that were fused to create this one.
   /// This is used in the finalizing and preprocessing steps.
@@ -345,6 +356,7 @@ open class MTMathAtom(var type: MTMathAtomType, var nucleus: String) {
     // No need to copy fusedAtoms but assert here to find any coding error
     assert(atom.fusedAtoms.isEmpty())
     atom.fontStyle = this.fontStyle
+    atom.delimiterSize = this.delimiterSize
     atom.indexRange = this.indexRange.copy()
     return atom
   }

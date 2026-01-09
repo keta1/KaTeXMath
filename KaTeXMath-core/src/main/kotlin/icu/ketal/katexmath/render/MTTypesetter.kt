@@ -9,6 +9,7 @@ import icu.ketal.katexmath.parse.MTMathAtom
 import icu.ketal.katexmath.parse.MTMathAtomType
 import icu.ketal.katexmath.parse.MTMathList
 import icu.ketal.katexmath.parse.MTMathTable
+import icu.ketal.katexmath.parse.MTDelimiterSize
 import icu.ketal.katexmath.parse.MathDisplayException
 import icu.ketal.katexmath.parse.NSNotFound
 import icu.ketal.katexmath.parse.NSRange
@@ -152,6 +153,24 @@ class MTTypesetter(
     var prevNode: MTMathAtom? = null
     var lastType: MTMathAtomType = KMTMathAtomNone
     outerloop@ for (atom in preprocessed) {
+      if (atom.delimiterSize != null) {
+        if (currentLine.isNotEmpty()) {
+          this.addDisplayLine()
+        }
+        val displayDelimiter = this.makeSizedDelimiter(atom)
+        if (displayDelimiter != null) {
+          this.addInterElementSpace(prevNode, atom.type)
+          displayDelimiter.position = currentPosition
+          currentPosition.x += displayDelimiter.width
+          displayAtoms.add(displayDelimiter)
+          if (atom.subScript != null || atom.superScript != null) {
+            this.makeScripts(atom, displayDelimiter, atom.indexRange.location, 0f)
+          }
+          lastType = atom.type
+          prevNode = atom
+        }
+        continue@outerloop
+      }
       when (atom.type) {
         KMTMathAtomNone -> {
         }
@@ -1162,6 +1181,21 @@ class MTTypesetter(
 
 
   // Large delimiters
+
+  private fun sizedDelimiterHeight(size: MTDelimiterSize): Float {
+    return styleFont.fontSize * size.multiplier
+  }
+
+  private fun makeSizedDelimiter(atom: MTMathAtom): MTDisplay? {
+    val size = atom.delimiterSize ?: return null
+    if (atom.nucleus.isEmpty()) {
+      return null
+    }
+    val glyphHeight = sizedDelimiterHeight(size)
+    val glyphDisplay = this.findGlyphForBoundary(atom.nucleus, glyphHeight)
+    glyphDisplay.range = atom.indexRange.copy()
+    return glyphDisplay
+  }
 
   private fun makeLeftRight(inner: MTInner): MTDisplay {
     assert(inner.leftBoundary != null || inner.rightBoundary != null) // Inner should have a boundary to call this function

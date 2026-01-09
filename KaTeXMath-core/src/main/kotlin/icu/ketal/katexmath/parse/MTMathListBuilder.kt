@@ -427,6 +427,17 @@ class MTMathListBuilder(str: String) {
     return boundary
   }
 
+  private fun sizedDelimiterAtom(
+    command: String,
+    type: MTMathAtomType,
+    size: MTDelimiterSize
+  ): MTMathAtom? {
+    val boundary = getBoundaryAtom(command) ?: return null
+    return MTMathAtom(type, boundary.nucleus).apply {
+      delimiterSize = size
+    }
+  }
+
   private fun atomForCommand(command: String): MTMathAtom? {
     MTMathAtom.atomForLatexSymbolName(command)?.let { return it }
 
@@ -485,6 +496,22 @@ class MTMathListBuilder(str: String) {
           rad.radicand = buildInternal(true)
         }
         rad
+      }
+
+      "bigl", "Bigl", "biggl", "Biggl", "bigr", "Bigr", "biggr", "Biggr" -> {
+        val size = when (command) {
+          "bigl", "bigr" -> MTDelimiterSize.Size1
+          "Bigl", "Bigr" -> MTDelimiterSize.Size2
+          "biggl", "biggr" -> MTDelimiterSize.Size3
+          "Biggl", "Biggr" -> MTDelimiterSize.Size4
+          else -> MTDelimiterSize.Size1
+        }
+        val type = if (command.endsWith("l")) {
+          MTMathAtomType.KMTMathAtomOpen
+        } else {
+          MTMathAtomType.KMTMathAtomClose
+        }
+        sizedDelimiterAtom(command, type, size)
       }
 
       "left" -> {
@@ -988,6 +1015,33 @@ class MTMathListBuilder(str: String) {
           val style = atom as MTMathStyle
           val command = styleToCommands[style.style]
           str.append("\\$command ")
+        } else if (atom.delimiterSize != null) {
+          val sizeCommand = when (atom.delimiterSize) {
+            MTDelimiterSize.Size1 -> "big"
+            MTDelimiterSize.Size2 -> "Big"
+            MTDelimiterSize.Size3 -> "bigg"
+            MTDelimiterSize.Size4 -> "Bigg"
+            else -> "big"
+          }
+          val sideCommand = when (atom.type) {
+            MTMathAtomType.KMTMathAtomOpen -> "l"
+            MTMathAtomType.KMTMathAtomClose -> "r"
+            else -> ""
+          }
+          val delim = MTMathAtom.delimiterNameForBoundaryAtom(
+            MTMathAtom(MTMathAtomType.KMTMathAtomBoundary, atom.nucleus)
+          )
+          val delimString = if (delim == null) {
+            atom.nucleus
+          } else {
+            val boundary = MTMathAtom(MTMathAtomType.KMTMathAtomBoundary, atom.nucleus)
+            delimToLatexString(boundary)
+          }
+          if (delimString.isNotEmpty()) {
+            str.append("\\$sizeCommand$sideCommand$delimString")
+          } else {
+            str.append("{}")
+          }
         } else if (atom.nucleus.isEmpty()) {
           str.append("{}")
         } else if (atom.nucleus == "\u2236") {
