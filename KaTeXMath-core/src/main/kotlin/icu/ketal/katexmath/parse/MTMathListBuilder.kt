@@ -443,6 +443,36 @@ class MTMathListBuilder(str: String) {
     }
   }
 
+  private fun inferredDelimiterType(delimiter: String): MTMathAtomType = when (delimiter) {
+    "(", "[", "{", "<", "lgroup", "langle", "lbrace", "lceil", "lfloor" ->
+      MTMathAtomType.KMTMathAtomOpen
+    ")", "]", "}", ">", "rgroup", "rangle", "rbrace", "rceil", "rfloor" ->
+      MTMathAtomType.KMTMathAtomClose
+    else -> MTMathAtomType.KMTMathAtomOrdinary
+  }
+
+  private fun sizedDelimiterAtomInferredType(
+    command: String,
+    size: MTDelimiterSize
+  ): MTMathAtom? {
+    val delim = this.readDelimiter()
+    if (delim == null) {
+      this.setError(MTParseErrors.MissingDelimiter, "Missing delimiter for $command")
+      return null
+    }
+    val boundary = MTMathAtom.boundaryAtomForDelimiterName(delim)
+    if (boundary == null) {
+      this.setError(
+        MTParseErrors.InvalidDelimiter,
+        "Invalid delimiter for $command: $delim",
+      )
+      return null
+    }
+    return MTMathAtom(inferredDelimiterType(delim), boundary.nucleus).apply {
+      delimiterSize = size
+    }
+  }
+
   private fun atomForCommand(command: String): MTMathAtom? {
     MTMathAtom.atomForLatexSymbolName(command)?.let { return it }
 
@@ -517,6 +547,17 @@ class MTMathListBuilder(str: String) {
           MTMathAtomType.KMTMathAtomClose
         }
         sizedDelimiterAtom(command, type, size)
+      }
+
+      "big", "Big", "bigg", "Bigg" -> {
+        val size = when (command) {
+          "big" -> MTDelimiterSize.Size1
+          "Big" -> MTDelimiterSize.Size2
+          "bigg" -> MTDelimiterSize.Size3
+          "Bigg" -> MTDelimiterSize.Size4
+          else -> MTDelimiterSize.Size1
+        }
+        sizedDelimiterAtomInferredType(command, size)
       }
 
       "left" -> {
