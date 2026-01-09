@@ -162,7 +162,12 @@ class MTMathListBuilder(str: String) {
           if (applyModifier(command, prevAtom)) {
             continue@outerloop
           }
-          if (command == "dots") {
+          if (command == "not") {
+            atom = atomForNotCommand()
+            if (atom == null) {
+              return null
+            }
+          } else if (command == "dots") {
             atom = atomForDots(prevAtom)
           } else {
             val fontStyle: MTFontStyle? = MTMathAtom.fontStyleWithName[command]
@@ -749,6 +754,38 @@ class MTMathListBuilder(str: String) {
     val op = atom as MTLargeOperator
     op.hasLimits = modifier == "limits"
     return true
+  }
+
+  private fun atomForNotCommand(): MTMathAtom? {
+    skipSpaces()
+    if (!hasCharacters()) {
+      setError(MTParseErrors.InvalidCommand, "Missing argument for \\not")
+      return null
+    }
+
+    val ch = getNextCharacter()
+    return if (ch == '\\') {
+      val command = readCommand()
+      val negatedCommand = when (command) {
+        "to", "rightarrow" -> "nrightarrow"
+        "in" -> "notin"
+        else -> null
+      }
+      if (negatedCommand != null) {
+        MTMathAtom.atomForLatexSymbolName(negatedCommand)
+      } else {
+        setError(MTParseErrors.InvalidCommand, "Invalid command \\not")
+        null
+      }
+    } else {
+      when (ch) {
+        '=' -> MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u2260")
+        else -> {
+          setError(MTParseErrors.InvalidCommand, "Invalid command \\not")
+          null
+        }
+      }
+    }
   }
 
   fun copyError(dst: MTParseError) {

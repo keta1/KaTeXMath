@@ -370,6 +370,7 @@ open class MTMathAtomFactory {
     "leftarrow" to MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u2190"),
     "uparrow" to MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u2191"),
     "rightarrow" to MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u2192"),
+    "nrightarrow" to MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u219B"),
     "downarrow" to MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u2193"),
     "leftrightarrow" to MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u2194"),
     "updownarrow" to MTMathAtom(MTMathAtomType.KMTMathAtomRelation, "\u2195"),
