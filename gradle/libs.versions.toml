@@ -11,7 +11,7 @@ espressoCore = "3.7.0"
 lifecycle = "2.9.3"
 activityCompose = "1.10.1"
 composeBom = "2025.08.01"
-vanniktech-publish = "0.34.0"
+vanniktech-publish = "0.36.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
